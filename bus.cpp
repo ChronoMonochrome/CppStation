@@ -18,15 +18,16 @@ namespace bus {
 		if ((addr % 4) != 0)
 			panic(fmt::format("Unaligned load32 address: {:08x}", addr));
 
-		int32_t offset = mMap.mRAM.contains(addr);
+		uint32_t abs_addr = mMap.maskRegion(addr);
+		int32_t offset = mMap.mRAM.contains(abs_addr);
 		if (offset != -1)
 			return mRam.load32(offset);
 
-		offset = mMap.mBIOS.contains(addr);
+		offset = mMap.mBIOS.contains(abs_addr);
 		if (offset != -1)
 			return mBios.load32(offset);
 
-		panic(fmt::format("Unhandled read at {:x}", addr));
+		panic(fmt::format("Unhandled read at {:x}", abs_addr));
 	}
 
 	void Bus::store32(uint32_t addr, uint32_t val)
@@ -34,13 +35,14 @@ namespace bus {
 		if ((addr % 4) != 0)
 			panic(fmt::format("Unaligned store32 address: {:08x}", addr));
 
-		int32_t offset = mMap.mRAM.contains(addr);
+		uint32_t abs_addr = mMap.maskRegion(addr);
+		int32_t offset = mMap.mRAM.contains(abs_addr);
 		if (offset != -1) {
 			mRam.store32(offset, val);
 			return;
 		}
 
-		offset = mMap.mMEM_CONTROL.contains(addr);
+		offset = mMap.mMEM_CONTROL.contains(abs_addr);
 		if (offset != -1) {
 			switch (offset)
 			{
@@ -58,19 +60,19 @@ namespace bus {
 			return;
 		}
 
-		offset = mMap.mRAM_SIZE.contains(addr);
+		offset = mMap.mRAM_SIZE.contains(abs_addr);
 		if (offset != -1) {
 			println("Unhandled write to RAM_SIZE register");
 			return;
 		}
 
-		offset = mMap.mCACHE_CONTROL.contains(addr);
+		offset = mMap.mCACHE_CONTROL.contains(abs_addr);
 		if (offset != -1) {
 			println("Unhandled write to CACHE_CONTROL register");
 			return;
 		}
 
-		panic(fmt::format("unhandled store32 into address {:08x}", addr));
+		panic(fmt::format("unhandled store32 into address {:08x}", abs_addr));
 	}
 
 	Bus::~Bus()

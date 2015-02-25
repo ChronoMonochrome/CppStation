@@ -16,17 +16,25 @@ namespace map {
 	}
 
 	Map::Map() :
-		mBIOS(0xbfc00000, bios::BIOS_SIZE),
+		mBIOS(0x1fc00000, bios::BIOS_SIZE),
 		// Memory latency and expansion mapping
 		mMEM_CONTROL(0x1f801000, 36),
 		// Register that has something to do with RAM configuration,
 		// configured by the BIOS
 		mRAM_SIZE(0x1f801060, 4),
-		// Cache control register
+		// Cache control register. Full address since it's in KSEG2
 		mCACHE_CONTROL(0xfffe0130, 4),
 		// RAM
-		mRAM(0xa0000000, ram::RAM_SIZE)
+		mRAM(0x00000000, ram::RAM_SIZE)
 	{
+	}
+
+	uint32_t Map::maskRegion(uint32_t addr)
+	{
+		// Index address space in 512MB chunks
+		uint32_t index = (addr >> 29);
+
+		return addr & REGION_MASK[index];
 	}
 
 	Map::~Map()
