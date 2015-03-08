@@ -27,6 +27,13 @@ namespace bus {
 		if (offset != -1)
 			return mBios.load32(offset);
 
+		offset = mMap.mIRQ_CONTROL.contains(abs_addr);
+		if (offset != -1)
+		{
+			println("IRQ control read {:x}", offset);
+			return 0;
+		}
+
 		panic("{}: Unhandled read at {:08x}", __func__, abs_addr);
 	}
 
@@ -94,6 +101,11 @@ namespace bus {
 		{
 			println("Unhandled write to SPU register {:08x}: {:04x}",
 					 abs_addr, val);
+			return;
+		}
+		offset = mMap.mTIMERS.contains(abs_addr);
+		if (offset != -1) {
+			println("Unhandled write to timer register {:x}", offset);
 			return;
 		}
 		panic("unhandled store16 into address {:08x}", addr);
