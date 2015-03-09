@@ -16,10 +16,13 @@ namespace cpu {
 	Cpu::Cpu() :
 		mPc(0xbfc00000), // PC reset value at the beginning of the BIOS
 		mIp(0),
-		mNextInstruction(0x0), // NOP
+		mNextPc(mPc + 4),
+		mCurrentPc(0),
 		mLoadRegIdx(0),
 		mLoadReg(0),
 		mSr(0),
+		mCause(0),
+		mEpc(0),
 		mHi(0xdeadc0de),
 		mLo(0xdeadc0de)
 	{
@@ -221,25 +224,27 @@ namespace cpu {
 
 	void Cpu::runNextInstruction()
 	{
-		uint32_t pc = mPc;
-
-		// Use previously loaded instruction
-		Instruction instruction(mNextInstruction);
-
 		// Fetch instruction at PC
-		mNextInstruction = Instruction(load32(pc));
-
+		Instruction instruction(load32(mPc));
 #ifdef DEBUG
-		println("{} instruction: {:08x} pc={:08x} next={:08x}", mIp, instruction.mData, mPc, mNextInstruction.mData);
+		if (mIp >= 2695640)
+			println("{} instruction: {:08x} pc={:08x} mNextPc={:08x} mCurrentPc={:08x}", mIp, instruction.mData, mPc, mNextPc, mCurrentPc);
 #endif
-		// Increment PC to point to the next instruction. All
-		// instructions are 32bit long.
-		mPc = pc + 4;
+		// Save the address of the current instruction to save in
+		// `EPC` in case of an exception.
+		mCurrentPc = mPc;
+
+		// Increment PC to point to the next instruction. and
+		// `next_pc` to the one after that. Both values can be
+		// modified by individual instructions (`next_pc` in case of a
+		// jump/branch, `pc` in case of an exception)
+		mPc		= mNextPc;
+		mNextPc	= mPc + 4;
 
 		// Execute the pending load (if any, otherwise it will load
-		// $zero which is a NOP). `set_reg` works only on
-		// `out_regs` so this operation won't be visible by
-		// the next instruction.
+		// `R0` which is a NOP). `set_reg` works only on `out_regs`
+		// so this operation won't be visible by the next
+		// instruction.
 		RegisterIndex reg = mLoadRegIdx;
 		uint32_t val = mLoadReg;
 		setReg(reg, val);
@@ -322,7 +327,7 @@ namespace cpu {
 	void Cpu::opJ(Instruction &instruction)
 	{
 		auto i = instruction.imm_jump();
-		mPc = (mPc & 0xf0000000) | (i << 2);
+		mNextPc = (mNextPc & 0xf0000000) | (i << 2);
 	}
 
 	void Cpu::opOr(Instruction &instruction)
@@ -386,11 +391,7 @@ namespace cpu {
 		// all times.
 		offset = offset << 2;
 
-		mPc += offset;
-
-		// We need to compensate for the hardcoded
-		// `pc.wrapping_add(4)` in `run_next_instruction`
-		mPc -= 4;
+		mNextPc = mPc + offset;
 	}
 
 
@@ -478,7 +479,7 @@ namespace cpu {
 
 	void Cpu::opJal(Instruction &instruction)
 	{
-		uint32_t ra = mPc;
+		uint32_t ra = mNextPc;
 
 		// Store return address in $31 ($ra)
 		RegisterIndex regIdx(31);
@@ -515,7 +516,7 @@ namespace cpu {
 	{
 		auto s = instruction.s();
 
-		mPc = reg(s);
+		mNextPc = reg(s);
 	}
 
 	void Cpu::opLb(Instruction &instruction)
@@ -639,12 +640,12 @@ namespace cpu {
 		auto d = instruction.d();
 		auto s = instruction.s();
 
-		uint32_t ra = mPc;
+		uint32_t ra = mNextPc;
 
 		// Store return address in `d`
 		setReg(d, ra);
 
-		mPc = reg(s);
+		mNextPc = reg(s);
 	}
 
 	void Cpu::opBxx(Instruction &instruction)
@@ -669,7 +670,7 @@ namespace cpu {
 
 		if (is_link)
 		{
-			uint32_t ra = mPc;
+			uint32_t ra = mNextPc;
 
 			// Store return address in R31
 			setReg(RegisterIndex(31), ra);

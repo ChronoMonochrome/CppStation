@@ -206,9 +206,10 @@ namespace cpu {
 		uint32_t mPc;
 		// Instruction count
 		uint32_t mIp;
-		// Next instruction to be executed, used to simulate the branch
-		// delay slot
-		Instruction mNextInstruction;
+		// Next value for the PC, used to simulate the branch delay slot
+		uint32_t mNextPc;
+		// Address of the instruction currently being executed. Used for setting the EPC in exceptions.
+		uint32_t mCurrentPc;
 		// General Purpose Registers.
 		// The first entry must always contain 0.
 		uint32_t mRegs[32];
@@ -222,6 +223,10 @@ namespace cpu {
 
 		// Cop0 register 12: Status Register
 		uint32_t mSr;
+		// Cop0 register 13: Cause Register
+		uint32_t mCause;
+		// Cop0 register 14: EPC
+		uint32_t mEpc;
 
 		// HI register for division remainder and multiplication high result
 		uint32_t mHi;
