@@ -254,6 +254,12 @@ namespace cpu {
 		// LO register for division quotient and multiplication low result
 		uint32_t mLo;
 
+		// Set by the current instruction if a branch occured and the
+		// next instruction will be in the delay slot.
+		bool mBranch;
+		// Set if the current instruction executes in the delay slot
+		bool mDelaySlot;
+
 		// Linkage to the communications bus
 		bus::Bus *mBus = nullptr;
 		// Link this CPU to a communications bus

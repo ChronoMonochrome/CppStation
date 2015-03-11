@@ -24,7 +24,9 @@ namespace cpu {
 		mCause(0),
 		mEpc(0),
 		mHi(0xdeadc0de),
-		mLo(0xdeadc0de)
+		mLo(0xdeadc0de),
+		mBranch(false),
+		mDelaySlot(false)
 	{
 		mLoadRegIdx.val = 0;
 		for (int i = 1; i < 32; i++)
@@ -263,6 +265,11 @@ namespace cpu {
 		mLoadRegIdx.val = 0;
 		mLoadReg = 0;
 
+		// If the last instruction was a branch then we're in the
+		// delay slot
+		mDelaySlot    = mBranch;
+		mBranch       = false;
+
 		decodeAndExecute(instruction);
 
 		// Copy the output registers as input for the
@@ -301,9 +308,17 @@ namespace cpu {
 		// Save current instruction address in `EPC`
 		mEpc = mCurrentPc;
 
+		if (mDelaySlot)
+		{
+			// When an exception occurs in a delay slot `EPC` points
+			// to the branch instruction and bit 31 of `CAUSE` is set.
+			mEpc -= 4;
+			mCause |= 1 << 31;
+		}
+
 		// Exceptions don't have a branch delay, we jump directly into
 		// the handler
-		mPc	    = handler;
+		mPc     = handler;
 		mNextPc = mPc + 4;
 	}
 
@@ -375,6 +390,8 @@ namespace cpu {
 	{
 		auto i = instruction.imm_jump();
 		mNextPc = (mNextPc & 0xf0000000) | (i << 2);
+
+		mBranch = true;
 	}
 
 	void Cpu::opOr(Instruction &instruction)
@@ -442,6 +459,8 @@ namespace cpu {
 		offset = offset << 2;
 
 		mNextPc = mPc + offset;
+
+		mBranch = true;
 	}
 
 
@@ -537,6 +556,8 @@ namespace cpu {
 		setReg(regIdx, ra);
 
 		opJ(instruction);
+
+		mBranch = true;
 	}
 
 	void Cpu::opAndi(Instruction &instruction)
@@ -567,6 +588,8 @@ namespace cpu {
 		auto s = instruction.s();
 
 		mNextPc = reg(s);
+
+		mBranch = true;
 	}
 
 	void Cpu::opLb(Instruction &instruction)
@@ -699,6 +722,8 @@ namespace cpu {
 		setReg(d, ra);
 
 		mNextPc = reg(s);
+
+		mBranch = true;
 	}
 
 	void Cpu::opBxx(Instruction &instruction)
