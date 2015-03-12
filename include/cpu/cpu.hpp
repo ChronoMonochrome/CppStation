@@ -22,7 +22,10 @@ namespace cpu {
 	namespace exception {
 		enum Exception
 		{
-			SysCall = 0x8
+			// System call (caused by the SYSCALL opcode)
+			SysCall = 0x8,
+			// Arithmetic overflow
+			Overflow = 0xc,
 		};
 	}
 

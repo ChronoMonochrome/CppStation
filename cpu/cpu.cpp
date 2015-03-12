@@ -485,7 +485,7 @@ namespace cpu {
 		uint32_t v = s1 + i;
 
 		if (AddOverflow(s1, i, v))
-			panic("ADDI overflow");
+			exception(exception::Overflow);
 
 		setReg(t, v);
 	}
@@ -669,7 +669,7 @@ namespace cpu {
 		uint32_t v = i_s + i_t;
 
 		if (AddOverflow(i_s, i_t, v))
-			panic("ADD overflow");
+			exception(exception::Overflow);
 
 		setReg(d, v);
 	}
