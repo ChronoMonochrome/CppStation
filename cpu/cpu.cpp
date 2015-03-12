@@ -231,15 +231,23 @@ namespace cpu {
 
 	void Cpu::runNextInstruction()
 	{
+		// Save the address of the current instruction to save in
+		// `EPC` in case of an exception.
+		mCurrentPc = mPc;
+
+		if (mCurrentPc % 4 != 0)
+		{
+			// PC is not correctly aligned!
+			exception(exception::LoadAddressError);
+			return;
+		}
+
 		// Fetch instruction at PC
 		Instruction instruction(load32(mPc));
 #ifdef DEBUG
 		if (mIp >= 2695640)
 			println("{} instruction: {:08x} pc={:08x} mNextPc={:08x} mCurrentPc={:08x}", mIp, instruction.mData, mPc, mNextPc, mCurrentPc);
 #endif
-		// Save the address of the current instruction to save in
-		// `EPC` in case of an exception.
-		mCurrentPc = mPc;
 
 		// Increment PC to point to the next instruction. and
 		// `next_pc` to the one after that. Both values can be
