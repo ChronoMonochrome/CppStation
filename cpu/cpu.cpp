@@ -68,10 +68,6 @@ namespace cpu {
 
 	void Cpu::store16(uint32_t addr, uint16_t val)
 	{
-		// Address must be 16bit aligned
-		if (addr % 2 != 0)
-			panic("Unaligned store16 address: {:08x}", addr);
-
 		if ((mSr & 0x10000) != 0) {
 			// Cache is isolated, ignore write
 			println("Ignoring store while cache is isolated");
@@ -361,7 +357,12 @@ namespace cpu {
 
 		uint32_t addr = reg(s) + i;
 		auto v = reg(t);
-		store32(addr, v);
+
+		// Address must be 32bit aligned
+		if (addr % 4 == 0)
+			store32(addr, v);
+		else
+			exception(exception::StoreAddressError);
 	}
 
 	void Cpu::opSll(Instruction &instruction)
@@ -543,7 +544,11 @@ namespace cpu {
 		uint32_t addr = reg(s) + i;
 		uint16_t v = (uint16_t)reg(t);
 
-		store16(addr, v);
+		// Address must be 16bit aligned
+		if (addr % 2 == 0)
+			store16(addr, v);
+		else
+			exception(exception::StoreAddressError);
 	}
 
 	void Cpu::opJal(Instruction &instruction)

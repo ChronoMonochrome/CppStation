@@ -15,9 +15,6 @@ namespace bus {
 
 	uint32_t Bus::load32(uint32_t addr)
 	{
-		if ((addr % 4) != 0)
-			panic("Unaligned load32 address: {:08x}", addr);
-
 		uint32_t abs_addr = mMap.maskRegion(addr);
 		int32_t offset = mMap.mRAM.contains(abs_addr);
 		if (offset != -1)
@@ -39,9 +36,6 @@ namespace bus {
 
 	void Bus::store32(uint32_t addr, uint32_t val)
 	{
-		if ((addr % 4) != 0)
-			panic("Unaligned store32 address: {:08x}", addr);
-
 		uint32_t abs_addr = mMap.maskRegion(addr);
 		int32_t offset = mMap.mRAM.contains(abs_addr);
 		if (offset != -1) {
