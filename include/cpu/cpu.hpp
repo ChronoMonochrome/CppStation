@@ -229,6 +229,9 @@ namespace cpu {
 		// Return From Exception
 		void opRfe(Instruction &instruction);
 
+		// Load Halfword Unsigned
+		void opLhu(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

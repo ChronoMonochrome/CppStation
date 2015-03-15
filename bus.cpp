@@ -97,6 +97,13 @@ namespace bus {
 
 	uint16_t Bus::load16(uint32_t addr)
 	{
+		uint32_t abs_addr = mMap.maskRegion(addr);
+		int32_t offset = mMap.mSPU.contains(abs_addr);
+		if (offset != -1)
+		{
+			println("Unhandled read from SPU register {:08x}", abs_addr);
+			return 0;
+		}
 		panic("unhandled load16 at address {:08x}", addr);
 	}
 
@@ -116,6 +123,7 @@ namespace bus {
 					 abs_addr, val);
 			return;
 		}
+
 		offset = mMap.mTIMERS.contains(abs_addr);
 		if (offset != -1) {
 			println("Unhandled write to timer register {:x}", offset);

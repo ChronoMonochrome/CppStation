@@ -224,6 +224,9 @@ namespace cpu {
 		case 0b001011:
 			opSltiu(instruction);
 			break;
+		case 0b100101:
+			opLhu(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -914,6 +917,28 @@ namespace cpu {
 		auto s = instruction.s();
 
 		mHi = reg(s);
+	}
+
+	void Cpu::opLhu(Instruction &instruction)
+	{
+
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = reg(s) + i;
+
+		// Address must be 16bit aligned
+		if (addr % 2 == 0)
+		{
+			auto v = load16(addr);
+
+			// Put the load in the delay slot
+			mLoadRegIdx.val = t.val;
+			mLoadReg = v;
+		} else {
+			exception(exception::LoadAddressError);
+		}
 	}
 
 	void Cpu::opRfe(Instruction &instruction)
