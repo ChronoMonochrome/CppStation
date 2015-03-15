@@ -34,6 +34,16 @@ namespace ram {
         mData[offset + 3] = b3;
 	}
 
+	// Store the 16bit little endian halfword `val` into `offset`
+	void Ram::store16(size_t offset, uint16_t val)
+	{
+		uint8_t b0 = val & 0xff;
+		uint8_t b1 = (val >> 8) & 0xff;
+
+		mData[offset + 0] = b0;
+		mData[offset + 1] = b1;
+	}
+
 	// Fetch the byte at `offset`
 	uint8_t Ram::load8(size_t offset)
 	{
