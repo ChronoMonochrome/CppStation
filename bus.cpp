@@ -31,6 +31,13 @@ namespace bus {
 			return 0;
 		}
 
+		offset = mMap.mDMA.contains(abs_addr);
+		if (offset != -1)
+		{
+			println("DMA read: {:08x}", abs_addr);
+			return 0;
+		}
+
 		panic("{}: Unhandled read at {:08x}", __func__, abs_addr);
 	}
 
@@ -76,6 +83,12 @@ namespace bus {
 		offset = mMap.mIRQ_CONTROL.contains(abs_addr);
 		if (offset != -1) {
 			println("IRQ control: {:x} <- {:08x}", offset, val);
+			return;
+		}
+
+		offset = mMap.mDMA.contains(abs_addr);
+		if (offset != -1) {
+			println("DMA write: {:08x} {:08x}", abs_addr, val);
 			return;
 		}
 

@@ -42,5 +42,6 @@ namespace map {
 		Range mEXPANSION_2;
 		Range mIRQ_CONTROL;
 		Range mTIMERS;
+		Range mDMA;
 	};
 }

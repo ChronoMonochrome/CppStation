@@ -34,7 +34,9 @@ namespace map {
 		// Interrupt Control registers (status and mask)
 		mIRQ_CONTROL(0x1f801070, 8),
 		// Timer registers
-		mTIMERS(0x1f801100, 0x30)
+		mTIMERS(0x1f801100, 0x30),
+		// Direct Memory Access registers
+		mDMA(0x1f801080, 0x80)
 	{
 	}
 
