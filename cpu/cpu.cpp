@@ -230,6 +230,9 @@ namespace cpu {
 		case 0b100101:
 			opLhu(instruction);
 			break;
+		case 0b100001:
+			opLh(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -970,6 +973,22 @@ namespace cpu {
 		auto v = reg(t) << (reg(s) & 0x1f);
 
 		setReg(d, v);
+	}
+
+	void Cpu::opLh(Instruction &instruction)
+	{
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = reg(s) + i;
+
+		// Cast as i16 to force sign extension
+		int16_t v = (int16_t)load16(addr);
+
+		// Put the load in the delay slot
+		mLoadRegIdx.val = t.val;
+		mLoadReg = v;
 	}
 
 	Cpu::~Cpu()

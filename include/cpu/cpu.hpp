@@ -235,6 +235,9 @@ namespace cpu {
 		// Shift Left Logical Variable
 		void opSllv(Instruction &instruction);
 
+		// Load Halfword (signed)
+		void opLh(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
