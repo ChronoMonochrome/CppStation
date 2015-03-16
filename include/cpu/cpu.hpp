@@ -238,6 +238,9 @@ namespace cpu {
 		// Load Halfword (signed)
 		void opLh(Instruction &instruction);
 
+		// Bitwise Not Or
+		void opNor(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

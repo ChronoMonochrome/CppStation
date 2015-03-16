@@ -160,6 +160,9 @@ namespace cpu {
 			case 0b000100:
 				opSllv(instruction);
 				break;
+			case 0b100111:
+				opNor(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -989,6 +992,17 @@ namespace cpu {
 		// Put the load in the delay slot
 		mLoadRegIdx.val = t.val;
 		mLoadReg = v;
+	}
+
+	void Cpu::opNor(Instruction &instruction)
+	{
+		auto d = instruction.d();
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		auto v = ~(reg(s) | reg(t));
+
+		setReg(d, v);
 	}
 
 	Cpu::~Cpu()
