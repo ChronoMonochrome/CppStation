@@ -157,6 +157,9 @@ namespace cpu {
 			case 0b010011:
 				opMtlo(instruction);
 				break;
+			case 0b000100:
+				opSllv(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -955,6 +958,18 @@ namespace cpu {
 		auto mode = mSr & 0x3f;
 		mSr &= !0x3f;
 		mSr |= mode >> 2;
+	}
+
+	void Cpu::opSllv(Instruction &instruction)
+	{
+		auto d = instruction.d();
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		// Shift amount is truncated to 5 bits
+		auto v = reg(t) << (reg(s) & 0x1f);
+
+		setReg(d, v);
 	}
 
 	Cpu::~Cpu()
