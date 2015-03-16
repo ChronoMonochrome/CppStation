@@ -244,6 +244,9 @@ namespace cpu {
 		// Shift Right Arithmetic Variable
 		void opSrav(Instruction &instruction);
 
+		// Shift Right Logical Variable
+		void opSrlv(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
