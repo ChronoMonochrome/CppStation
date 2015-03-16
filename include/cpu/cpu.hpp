@@ -241,6 +241,9 @@ namespace cpu {
 		// Bitwise Not Or
 		void opNor(Instruction &instruction);
 
+		// Shift Right Arithmetic Variable
+		void opSrav(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

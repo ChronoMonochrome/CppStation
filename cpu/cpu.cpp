@@ -163,6 +163,9 @@ namespace cpu {
 			case 0b100111:
 				opNor(instruction);
 				break;
+			case 0b000111:
+				opSrav(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -1001,6 +1004,18 @@ namespace cpu {
 		auto t = instruction.t();
 
 		auto v = ~(reg(s) | reg(t));
+
+		setReg(d, v);
+	}
+
+	void Cpu::opSrav(Instruction &instruction)
+	{
+		auto d = instruction.d();
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		// Shift amount is truncated to 5 bits
+		auto v = ((int32_t)reg(t)) >> (reg(s) & 0x1f);
 
 		setReg(d, v);
 	}
