@@ -11,6 +11,7 @@ namespace ram {
 	{
 	}
 
+	// Fetch the 32 bit little endian word at ‘offset‘
 	uint32_t Ram::load32(size_t offset)
 	{
 		uint8_t b0 = mData[offset + 0];
@@ -21,6 +22,7 @@ namespace ram {
 		return b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
 	}
 
+	// Store the 32bit little endian word `val` into `offset`
 	void Ram::store32(size_t offset, uint32_t val)
 	{
         uint8_t b0 = val & 0xff;
@@ -32,6 +34,15 @@ namespace ram {
         mData[offset + 1] = b1;
         mData[offset + 2] = b2;
         mData[offset + 3] = b3;
+	}
+
+	// Fetch the 16bit little endian halfword at `offset`
+	uint16_t Ram::load16(size_t offset)
+	{
+		uint8_t b0 = mData[offset + 0];
+		uint8_t b1 = mData[offset + 1];
+
+		return b0 | (b1 << 8);
 	}
 
 	// Store the 16bit little endian halfword `val` into `offset`

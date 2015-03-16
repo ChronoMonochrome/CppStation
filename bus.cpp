@@ -98,7 +98,12 @@ namespace bus {
 	uint16_t Bus::load16(uint32_t addr)
 	{
 		uint32_t abs_addr = mMap.maskRegion(addr);
-		int32_t offset = mMap.mSPU.contains(abs_addr);
+
+		int32_t offset = mMap.mRAM.contains(abs_addr);
+		if (offset != -1)
+			return mRam.load16(offset);
+
+		offset = mMap.mSPU.contains(abs_addr);
 		if (offset != -1)
 		{
 			println("Unhandled read from SPU register {:08x}", abs_addr);
