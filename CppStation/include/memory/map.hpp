@@ -43,5 +43,6 @@ namespace map {
 		Range mIRQ_CONTROL;
 		Range mTIMERS;
 		Range mDMA;
+		Range mGPU;
 	};
 }

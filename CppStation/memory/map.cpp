@@ -36,7 +36,9 @@ namespace map {
 		// Timer registers
 		mTIMERS(0x1f801100, 0x30),
 		// Direct Memory Access registers
-		mDMA(0x1f801080, 0x80)
+		mDMA(0x1f801080, 0x80),
+		// GPU registers
+		mGPU(0x1f801810, 8)
 	{
 	}
 

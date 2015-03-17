@@ -38,6 +38,13 @@ namespace bus {
 			return 0;
 		}
 
+		offset = mMap.mGPU.contains(abs_addr);
+		if (offset != -1)
+		{
+			println("GPU read: {}", offset);
+			return 0;
+		}
+
 		panic("{}: Unhandled read at {:08x}", __func__, abs_addr);
 	}
 
@@ -89,6 +96,12 @@ namespace bus {
 		offset = mMap.mDMA.contains(abs_addr);
 		if (offset != -1) {
 			println("DMA write: {:08x} {:08x}", abs_addr, val);
+			return;
+		}
+
+		offset = mMap.mGPU.contains(abs_addr);
+		if (offset != -1) {
+			println("GPU write {}: {:08x}", offset, val);
 			return;
 		}
 
