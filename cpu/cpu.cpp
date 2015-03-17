@@ -169,6 +169,9 @@ namespace cpu {
 			case 0b000110:
 				opSrlv(instruction);
 				break;
+			case 0b011001:
+				opMultu(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -1033,6 +1036,20 @@ namespace cpu {
 		auto v = reg(t) >> (reg(s) & 0x1f);
 
 		setReg(d, v);
+	}
+
+	void Cpu::opMultu(Instruction &instruction)
+	{
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		uint64_t a = reg(s);
+		uint64_t b = reg(t);
+
+		auto v = a * b;
+
+		mHi = (uint32_t)(v >> 32);
+		mLo = v;
 	}
 
 	Cpu::~Cpu()

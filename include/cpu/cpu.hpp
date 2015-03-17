@@ -247,6 +247,9 @@ namespace cpu {
 		// Shift Right Logical Variable
 		void opSrlv(Instruction &instruction);
 
+		// Multiply Unsigned
+		void opMultu(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
