@@ -42,7 +42,15 @@ namespace bus {
 		if (offset != -1)
 		{
 			println("GPU read: {}", offset);
-			return 0;
+			switch (offset)
+			{
+			case 4:
+				// GPUSTAT: set bits 28 to signal that the GPU is ready for DMA.
+				return 0x10000000;
+				break;
+			default:
+				return 0;
+			}
 		}
 
 		panic("{}: Unhandled read at {:08x}", __func__, abs_addr);
