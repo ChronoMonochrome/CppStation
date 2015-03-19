@@ -172,6 +172,9 @@ namespace cpu {
 			case 0b011001:
 				opMultu(instruction);
 				break;
+			case 0b100110:
+				opXor(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -1050,6 +1053,17 @@ namespace cpu {
 
 		mHi = (uint32_t)(v >> 32);
 		mLo = v;
+	}
+
+	void Cpu::opXor(Instruction &instruction)
+	{
+		auto d = instruction.d();
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		auto v = reg(s) ^ reg(t);
+
+		setReg(d, v);
 	}
 
 	Cpu::~Cpu()

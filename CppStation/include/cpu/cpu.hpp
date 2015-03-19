@@ -250,6 +250,9 @@ namespace cpu {
 		// Multiply Unsigned
 		void opMultu(Instruction &instruction);
 
+		// Bitwise Exclusive Or
+		void opXor(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
