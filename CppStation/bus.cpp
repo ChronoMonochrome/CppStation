@@ -105,6 +105,12 @@ namespace bus {
 			return;
 		}
 
+		offset = mMap.mTIMERS.contains(abs_addr);
+		if (offset != -1) {
+			println("Unhandled write to timer register {:x}: {:08x}", offset, val);
+			return;
+		}
+
 		panic("unhandled store32 into address {:08x}", abs_addr);
 	}
 
@@ -122,6 +128,14 @@ namespace bus {
 			println("Unhandled read from SPU register {:08x}", abs_addr);
 			return 0;
 		}
+
+		offset = mMap.mIRQ_CONTROL.contains(abs_addr);
+		if (offset != -1)
+		{
+			println("IRQ control read {:x}", offset);
+			return 0;
+		}
+
 		panic("unhandled load16 at address {:08x}", addr);
 	}
 
@@ -147,6 +161,13 @@ namespace bus {
 			println("Unhandled write to timer register {:x}", offset);
 			return;
 		}
+
+		offset = mMap.mIRQ_CONTROL.contains(abs_addr);
+		if (offset != -1) {
+			println("IRQ control write {:x}, {:04x}", offset, val);
+			return;
+		}
+
 		panic("unhandled store16 into address {:08x}", addr);
 	}
 
