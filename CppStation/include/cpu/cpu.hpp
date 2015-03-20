@@ -28,6 +28,8 @@ namespace cpu {
 			StoreAddressError = 0x5,
 			// System call (caused by the SYSCALL opcode)
 			SysCall = 0x8,
+			// Breakpoint (caused by the BREAK opcode)
+			Break = 0x9,
 			// Arithmetic overflow
 			Overflow = 0xc,
 		};
@@ -252,6 +254,9 @@ namespace cpu {
 
 		// Bitwise Exclusive Or
 		void opXor(Instruction &instruction);
+
+		// Break
+		void opBreak(Instruction &instruction);
 
 		~Cpu();
 		// The program counter register

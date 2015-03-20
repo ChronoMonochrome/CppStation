@@ -175,6 +175,9 @@ namespace cpu {
 			case 0b100110:
 				opXor(instruction);
 				break;
+			case 0b001101:
+				opBreak(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -1064,6 +1067,11 @@ namespace cpu {
 		auto v = reg(s) ^ reg(t);
 
 		setReg(d, v);
+	}
+
+	void Cpu::opBreak(Instruction &instruction)
+	{
+		exception(exception::Break);
 	}
 
 	Cpu::~Cpu()
