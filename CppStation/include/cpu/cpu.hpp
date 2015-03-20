@@ -264,6 +264,9 @@ namespace cpu {
 		// Substract and check for signed overflow
 		void opSub(Instruction &instruction);
 
+		// Bitwise eXclusive Or Immediate
+		void opXori(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

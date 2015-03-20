@@ -257,6 +257,9 @@ namespace cpu {
 		case 0b100001:
 			opLh(instruction);
 			break;
+		case 0b001110:
+			opXori(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -1109,6 +1112,17 @@ namespace cpu {
 			exception(exception::Overflow);
 		else
 			setReg(d, v);
+	}
+
+	void Cpu::opXori(Instruction &instruction)
+	{
+		auto i = instruction.imm();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		auto v = reg(s) ^ i;
+
+		setReg(t, v);
 	}
 
 	Cpu::~Cpu()
