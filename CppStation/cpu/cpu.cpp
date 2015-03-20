@@ -178,6 +178,9 @@ namespace cpu {
 			case 0b001101:
 				opBreak(instruction);
 				break;
+			case 0b011000:
+				opMult(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -1072,6 +1075,20 @@ namespace cpu {
 	void Cpu::opBreak(Instruction &instruction)
 	{
 		exception(exception::Break);
+	}
+
+	void Cpu::opMult(Instruction &instruction)
+	{
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		int64_t a = ((int32_t)reg(s));
+		int64_t b = ((int32_t)reg(t));
+
+		uint64_t v = (uint64_t)(a * b);
+
+		mHi = (uint32_t)(v >> 32);
+		mLo = (uint32_t)v;
 	}
 
 	Cpu::~Cpu()

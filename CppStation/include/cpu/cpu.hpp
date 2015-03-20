@@ -258,6 +258,9 @@ namespace cpu {
 		// Break
 		void opBreak(Instruction &instruction);
 
+		// Multiply (signed)
+		void opMult(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
