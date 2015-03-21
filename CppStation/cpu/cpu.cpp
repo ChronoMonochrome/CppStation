@@ -191,7 +191,7 @@ namespace cpu {
 				opSub(instruction);
 				break;
 			default:
-				panic("Unhandled instruction {:08x}", instruction.mData);
+				opIllegal(instruction);
 			}
 			break;
 		case 0b001111:
@@ -312,7 +312,7 @@ namespace cpu {
 			opSwc3(instruction);
 			break;
 		default:
-			panic("Unhandled instruction {:08x}", instruction.mData);
+			opIllegal(instruction);
 		}
 	}
 
@@ -1402,6 +1402,13 @@ namespace cpu {
 		// Not supported by this coprocessor
 		exception(exception::CoprocessorError);
 	}
+
+	void Cpu::opIllegal(Instruction &instruction)
+	{
+		println("Illegal instruction {}!", instruction.mData);
+		exception(exception::IllegalInstruction);
+	}
+
 
 	Cpu::~Cpu()
 	{

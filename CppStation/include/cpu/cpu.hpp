@@ -30,6 +30,8 @@ namespace cpu {
 			SysCall = 0x8,
 			// Breakpoint (caused by the BREAK opcode)
 			Break = 0x9,
+			// CPU encountered an unknown instruction
+			IllegalInstruction = 0xa,
 			// Unsupported coprocessor operation
 			CoprocessorError = 0xb,
 			// Arithmetic overflow
@@ -304,6 +306,9 @@ namespace cpu {
 		void opSwc2(Instruction &instruction);
 		// Store Word in Coprocessor 3
 		void opSwc3(Instruction &instruction);
+
+		// Illegal instruction
+		void opIllegal(Instruction &instruction);
 
 		~Cpu();
 		// The program counter register
