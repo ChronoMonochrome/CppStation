@@ -275,6 +275,12 @@ namespace cpu {
 		case 0b100110:
 			opLwr(instruction);
 			break;
+		case 0b101010:
+			opSwl(instruction);
+			break;
+		case 0b101110:
+			opSwr(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -1245,6 +1251,80 @@ namespace cpu {
 		// Put the load in the delay slot
 		mLoadRegIdx.val = t.val;
 		mLoadReg = v;
+	}
+
+	void Cpu::opSwl(Instruction &instruction)
+	{
+
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = (uint32_t)(reg(s) + i);
+		auto v = reg(t);
+
+		auto aligned_addr = addr & ~UINT32_C(3);
+		// Load the current value for the aligned word at the target
+		// address
+		auto cur_mem = load32(aligned_addr);
+
+		uint32_t mem;
+		switch (addr & 3)
+		{
+		case 0:
+			mem = (cur_mem & 0x00ffffff) | (v >> 24);
+			break;
+		case 1:
+			mem = (cur_mem & 0x0000ffff) | (v >> 16);
+			break;
+		case 2:
+			mem = (cur_mem & 0x000000ff) | (v >> 8);
+			break;
+		case 3:
+			mem = (cur_mem & 0x00000000) | (v >> 0);
+			break;
+		default:
+			panic("unreachable");
+		};
+
+		store32(aligned_addr, mem);
+	}
+
+	void Cpu::opSwr(Instruction &instruction)
+	{
+
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = (uint32_t)(reg(s) + i);
+		auto v = reg(t);
+
+		auto aligned_addr = addr & ~UINT32_C(3);
+		// Load the current value for the aligned word at the target
+		// address
+		auto cur_mem = load32(aligned_addr);
+
+		uint32_t mem;
+		switch (addr & 3)
+		{
+		case 0:
+			mem = (cur_mem & 0x00ffffff) | (v << 24);
+			break;
+		case 1:
+			mem = (cur_mem & 0x0000ffff) | (v << 16);
+			break;
+		case 2:
+			mem = (cur_mem & 0x000000ff) | (v << 8);
+			break;
+		case 3:
+			mem = (cur_mem & 0x00000000) | (v << 0);
+			break;
+		default:
+			panic("unreachable");
+		};
+
+		store32(aligned_addr, mem);
 	}
 
 	Cpu::~Cpu()

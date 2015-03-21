@@ -282,6 +282,12 @@ namespace cpu {
 		// Load Word Right (little-endian only implementation)
 		void opLwr(Instruction &instruction);
 
+		// Store Word Left (little-endian only implementation)
+		void opSwl(Instruction &instruction);
+
+		// Store Word Right (little-endian only implementation)
+		void opSwr(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
