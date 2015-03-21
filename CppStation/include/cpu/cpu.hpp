@@ -288,6 +288,23 @@ namespace cpu {
 		// Store Word Right (little-endian only implementation)
 		void opSwr(Instruction &instruction);
 
+		// Load Word in Coprocessor 0
+		void opLwc0(Instruction &instruction);
+		// Load Word in Coprocessor 1
+		void opLwc1(Instruction &instruction);
+		// Load Word in Coprocessor 2
+		void opLwc2(Instruction &instruction);
+		// Load Word in Coprocessor 3
+		void opLwc3(Instruction &instruction);
+		// Store Word in Coprocessor 0
+		void opSwc0(Instruction &instruction);
+		// Store Word in Coprocessor 1
+		void opSwc1(Instruction &instruction);
+		// Store Word in Coprocessor 2
+		void opSwc2(Instruction &instruction);
+		// Store Word in Coprocessor 3
+		void opSwc3(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

@@ -287,6 +287,30 @@ namespace cpu {
 		case 0b101110:
 			opSwr(instruction);
 			break;
+		case 0b110000:
+			opLwc0(instruction);
+			break;
+		case 0b110001:
+			opLwc1(instruction);
+			break;
+		case 0b110010:
+			opLwc2(instruction);
+			break;
+		case 0b110011:
+			opLwc3(instruction);
+			break;
+		case 0b111000:
+			opSwc0(instruction);
+			break;
+		case 0b111001:
+			opSwc1(instruction);
+			break;
+		case 0b111010:
+			opSwc2(instruction);
+			break;
+		case 0b111011:
+			opSwc3(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -1331,6 +1355,52 @@ namespace cpu {
 		};
 
 		store32(aligned_addr, mem);
+	}
+
+	void Cpu::opLwc0(Instruction &instruction)
+	{
+		// Not supported by this coprocessor
+		exception(exception::CoprocessorError);
+	}
+
+	void Cpu::opLwc1(Instruction &instruction)
+	{
+		// Not supported by this coprocessor
+		exception(exception::CoprocessorError);
+	}
+
+	void Cpu::opLwc2(Instruction &instruction)
+	{
+		panic("unhandled GTE LWC: {}", instruction.mData);
+	}
+
+	void Cpu::opLwc3(Instruction &instruction)
+	{
+		// Not supported by this coprocessor
+		exception(exception::CoprocessorError);
+	}
+
+	void Cpu::opSwc0(Instruction &instruction)
+	{
+		// Not supported by this coprocessor
+		exception(exception::CoprocessorError);
+	}
+
+	void Cpu::opSwc1(Instruction &instruction)
+	{
+		// Not supported by this coprocessor
+		exception(exception::CoprocessorError);
+	}
+
+	void Cpu::opSwc2(Instruction &instruction)
+	{
+		panic("unhandled GTE SWC: {}", instruction.mData);
+	}
+
+	void Cpu::opSwc3(Instruction &instruction)
+	{
+		// Not supported by this coprocessor
+		exception(exception::CoprocessorError);
 	}
 
 	Cpu::~Cpu()
