@@ -269,6 +269,12 @@ namespace cpu {
 		case 0b010011:
 			opCop3(instruction);
 			break;
+		case 0b100010:
+			opLwl(instruction);
+			break;
+		case 0b100110:
+			opLwr(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -1147,6 +1153,98 @@ namespace cpu {
 	void Cpu::opCop3(Instruction &instruction)
 	{
 		exception(exception::CoprocessorError);
+	}
+
+	void Cpu::opLwl(Instruction &instruction)
+	{
+
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = (uint32_t)(reg(s) + i);
+
+		// This instruction bypasses the load delay restriction: this
+		// instruction will merge the new contents with the value
+		// currently being loaded if need be.
+		auto cur_v = mOutRegs[t.val];
+
+		// Next we load the *aligned* word containing the first
+		// addressed byte
+		auto aligned_addr = addr & ~UINT32_C(3);
+		auto aligned_word = load32(aligned_addr);
+
+		// Depending on the address alignment we fetch the 1, 2, 3 or
+		// 4 *most* significant bytes and put them in the target
+		// register.
+		uint32_t v;
+		switch (addr & 3)
+		{
+		case 0:
+			v = (cur_v & 0x00ffffff) | (aligned_word << 24);
+			break;
+		case 1:
+			v = (cur_v & 0x0000ffff) | (aligned_word << 16);
+			break;
+		case 2:
+			v = (cur_v & 0x000000ff) | (aligned_word << 8);
+			break;
+		case 3:
+			v = (cur_v & 0x00000000) | (aligned_word << 0);
+			break;
+		default:
+			panic("unreachable");
+		};
+
+		// Put the load in the delay slot
+		mLoadRegIdx.val = t.val;
+		mLoadReg = v;
+	}
+
+	void Cpu::opLwr(Instruction &instruction)
+	{
+
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = (uint32_t)(reg(s) + i);
+
+		// This instruction bypasses the load delay restriction: this
+		// instruction will merge the new contents with the value
+		// currently being loaded if need be.
+		auto cur_v = mOutRegs[t.val];
+
+		// Next we load the *aligned* word containing the first
+		// addressed byte
+		auto aligned_addr = addr & ~UINT32_C(3);
+		auto aligned_word = load32(aligned_addr);
+
+		// Depending on the address alignment we fetch the 1, 2, 3 or
+		// 4 *least* significant bytes and put them in the target
+		// register.
+		uint32_t v;
+		switch (addr & 3)
+		{
+		case 0:
+			v = (cur_v & 0x00ffffff) | (aligned_word >> 24);
+			break;
+		case 1:
+			v = (cur_v & 0x0000ffff) | (aligned_word >> 16);
+			break;
+		case 2:
+			v = (cur_v & 0x000000ff) | (aligned_word >> 8);
+			break;
+		case 3:
+			v = (cur_v & 0x00000000) | (aligned_word >> 0);
+			break;
+		default:
+			panic("unreachable");
+		};
+
+		// Put the load in the delay slot
+		mLoadRegIdx.val = t.val;
+		mLoadReg = v;
 	}
 
 	Cpu::~Cpu()

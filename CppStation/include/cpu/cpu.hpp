@@ -276,6 +276,12 @@ namespace cpu {
 		// Coprocessor 3 opcode (does not exist on the Playstation)
 		void opCop3(Instruction &instruction);
 
+		// Load Word Left (little-endian only implementation)
+		void opLwl(Instruction &instruction);
+
+		// Load Word Right (little-endian only implementation)
+		void opLwr(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
