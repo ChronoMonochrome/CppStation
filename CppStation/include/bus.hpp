@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory/ram.hpp>
-#include <memory/bios.hpp>
-#include <memory/map.hpp>
 #include <cpu/cpu.hpp>
+#include <memory/bios.hpp>
+#include <memory/dma.hpp>
+#include <memory/map.hpp>
+#include <memory/ram.hpp>
 
 namespace bus
 {
@@ -23,10 +24,27 @@ namespace bus
 		uint8_t load8(uint32_t addr);
 		// Store byte `val` into `addr`
 		void store8(uint32_t addr, uint8_t val);
+
+		// DMA register read
+		uint32_t dmaReg(uint32_t offset);
+
+		// DMA register write
+		void setDmaReg(uint32_t offset, uint32_t val);
+
+		// Execute DMA transfer for a port
+		void doDma(dma::Port port);
+
+		// Emulate DMA transfer for linked list synchronization mode.
+		void doDmaLinkedList(dma::Port port);
+
+		// Emulate DMA transfer for Manual and Request synchronization modes.
+		void doDmaBlock(dma::Port port);
+
 		~Bus();
 		map::Map mMap;
 		ram::Ram mRam;
 		bios::Bios mBios;
 		cpu::Cpu mCpu;
+		dma::Dma mDma;
 	};
 }
