@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cpu/cpu.hpp>
+#include <gpu/gpu.hpp>
 #include <memory/bios.hpp>
 #include <memory/dma.hpp>
 #include <memory/map.hpp>
@@ -46,5 +47,6 @@ namespace bus
 		bios::Bios mBios;
 		cpu::Cpu mCpu;
 		dma::Dma mDma;
+		gpu::Gpu mGpu;
 	};
 }

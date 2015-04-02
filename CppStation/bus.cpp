@@ -12,6 +12,7 @@ namespace bus {
 		mCpu.connectBus(this);
 		mBios.connectBus(this);
 		mDma.connectBus(this);
+		mGpu.connectBus(this);
 	}
 
 	Bus::~Bus()
@@ -51,12 +52,9 @@ namespace bus {
 			switch (offset)
 			{
 			case 4:
-				// GPUSTAT: set bit 26, 27 28 to signal that the GPU
-				// is ready for DMA and CPU access. This way the BIOS
-				// won't dead lock waiting for an event that'll never
-				// come.
-				return 0x1c000000;
+				return mGpu.status();
 			default:
+				panic("Unhandled GPU read {}", offset);
 				return 0;
 			}
 		}
@@ -125,7 +123,7 @@ namespace bus {
 
 		offset = mMap.mGPU.contains(abs_addr);
 		if (offset != -1) {
-			println("GPU write {}: {:08x}", offset, val);
+			panic("GPU write {}: {:08x}", offset, val);
 			return;
 		}
 
