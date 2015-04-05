@@ -172,6 +172,9 @@ namespace gpu {
 		// GP1(0x00): soft reset
 		void gp1Reset(uint32_t val);
 
+		// GP1(0x04): DMA Direction
+		void gp1DmaDirection(uint32_t val);
+
 		// GP1(0x08): Display Mode
 		void gp1DisplayMode(uint32_t val);
 

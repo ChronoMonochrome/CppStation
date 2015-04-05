@@ -197,6 +197,9 @@ namespace gpu
 		case 0x00:
 			gp1Reset(val);
 			break;
+		case 0x04:
+			gp1DmaDirection(val);
+			break;
 		case 0x08:
 			gp1DisplayMode(val);
 			break;
@@ -252,6 +255,25 @@ namespace gpu
 		// XXX should also clear the command FIFO when we implement it
 		// XXX should also invalidate GPU cache if we ever implement it
     }
+
+	void Gpu::gp1DmaDirection(uint32_t val)
+	{
+		switch (val & 3)
+		{
+		case 0:
+			mDmaDirection = DmaDirection::Off;
+			break;
+		case 1:
+			mDmaDirection = DmaDirection::Fifo;
+			break;
+		case 2:
+			mDmaDirection = DmaDirection::CpuToGp0;
+			break;
+		case 3:
+			mDmaDirection = DmaDirection::VRamToCpu;
+			break;
+		};
+	}
 
 	void Gpu::gp1DisplayMode(uint32_t val)
 	{
