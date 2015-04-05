@@ -79,6 +79,10 @@ namespace gpu {
 		uint8_t mPageBaseX;
 		// Texture page base Y coordinate (1bit, 256 line increment)
 		uint8_t mPageBaseY;
+		// Mirror textured rectangles along the x axis
+		bool mRectangleTextureXFlip;
+		// Mirror textured rectangles along the y axis
+		bool mRectangleTextureYFlip;
 		// Semi-transparency. Not entirely sure how to handle that value
 		// yet, it seems to describe how to blend the source and
 		// destination colors.
@@ -120,6 +124,12 @@ namespace gpu {
 
 		// Retreive value of the status register
 		uint32_t status();
+
+		// Handle writes to the GP0 command register
+		void gp0(uint32_t val);
+
+		// GP0(0xE1) command
+		void gp0DrawMode(uint32_t val);
 
 		// Linkage to the communications bus
 		bus::Bus *mBus = nullptr;

@@ -123,7 +123,14 @@ namespace bus {
 
 		offset = mMap.mGPU.contains(abs_addr);
 		if (offset != -1) {
-			panic("GPU write {}: {:08x}", offset, val);
+			switch (offset)
+			{
+			case 0:
+				mGpu.gp0(val);
+				break;
+			default:
+				panic("GPU write {}: {:08x}", offset, val);
+			}
 			return;
 		}
 

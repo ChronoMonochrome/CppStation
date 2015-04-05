@@ -25,6 +25,8 @@ namespace gpu
 	Gpu::Gpu() :
 		mPageBaseX(0),
 		mPageBaseY(0),
+		mRectangleTextureXFlip(false),
+		mRectangleTextureYFlip(false),
 		mSemiTransparency(0),
 		mTextureDepth(TextureDepth::T4Bit),
 		mDithering(false),
@@ -116,5 +118,49 @@ namespace gpu
 		r |= dmaRequest << 25;
 
 		return r;
+	}
+
+	void Gpu::gp0(uint32_t val)
+	{
+		auto opcode = (val >> 24) & 0xff;
+
+		switch (opcode)
+		{
+		case 0xe1:
+			gp0DrawMode(val);
+			break;
+		default:
+			panic("Unhandled GP0 opcode {:02x} ({:08x})", opcode, val);
+		}
+	}
+
+	void Gpu::gp0DrawMode(uint32_t val)
+	{
+		mPageBaseX = val & 0xf;
+		mPageBaseY = (val >> 4) & 1;
+		mSemiTransparency = (val >> 5) & 3;
+
+		uint32_t tmpVal = (val >> 7) & 3;
+
+		switch (tmpVal)
+		{
+		case 0:
+			mTextureDepth = TextureDepth::T4Bit;
+			break;
+		case 1:
+			mTextureDepth = TextureDepth::T8Bit;
+			break;
+		case 2:
+			mTextureDepth = TextureDepth::T15Bit;
+			break;
+		default:
+			panic("Unhandled texture depth {}", tmpVal);
+		}
+
+		mDithering = ((val >> 9) & 1) != 0;
+		mDrawToDisplay = ((val >> 10) & 1) != 0;
+		mTextureDisable = ((val >> 11) & 1) != 0;
+		mRectangleTextureXFlip = ((val >> 12) & 1) != 0;
+		mRectangleTextureYFlip = ((val >> 13) & 1) != 0;
 	}
 }
