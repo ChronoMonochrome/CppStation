@@ -136,6 +136,12 @@ namespace gpu
 		return r;
 	}
 
+	uint32_t Gpu::read()
+	{
+		// Not implemented for now...
+		return 0;
+	}
+
 	void Gpu::gp0(uint32_t val)
 	{
 		auto opcode = (val >> 24) & 0xff;
@@ -191,6 +197,9 @@ namespace gpu
 		case 0x00:
 			gp1Reset(val);
 			break;
+		case 0x08:
+			gp1DisplayMode(val);
+			break;
 		default:
 			panic("Unhandled GP1 command {:08x}", val);
 		}
@@ -242,5 +251,24 @@ namespace gpu
 
 		// XXX should also clear the command FIFO when we implement it
 		// XXX should also invalidate GPU cache if we ever implement it
+    }
+
+	void Gpu::gp1DisplayMode(uint32_t val)
+	{
+		uint8_t hr1 = (val & 3);
+		uint8_t hr2 = ((val >> 6) & 1);
+
+		mHres = HorizontalRes::fromFields(hr1, hr2);
+
+		mVres = (val & 0x4 != 0) ? VerticalRes::Y480Lines : VerticalRes::Y240Lines;
+
+		mVmode = (val & 0x8 != 0) ? VMode::Pal : VMode::Ntsc;
+
+		mDisplayDepth = (val & 0x10 != 0) ? DisplayDepth::D15Bits : DisplayDepth::D24Bits;
+
+		mInterlaced = val & 0x20 != 0;
+
+		if ((val & 0x80) != 0)
+			panic("Unsupported display mode {:08x}", val);
     }
 }

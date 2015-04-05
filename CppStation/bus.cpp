@@ -51,6 +51,8 @@ namespace bus {
 			println("GPU read: {}", offset);
 			switch (offset)
 			{
+			case 0:
+				return mGpu.read();
 			case 4:
 				return mGpu.status();
 			default:

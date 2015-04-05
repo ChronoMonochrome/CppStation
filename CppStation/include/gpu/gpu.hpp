@@ -157,6 +157,9 @@ namespace gpu {
 		// Retreive value of the status register
 		uint32_t status();
 
+		// Retreive value of the "read" register
+		uint32_t read();
+
 		// Handle writes to the GP0 command register
 		void gp0(uint32_t val);
 
@@ -168,6 +171,9 @@ namespace gpu {
 
 		// GP1(0x00): soft reset
 		void gp1Reset(uint32_t val);
+
+		// GP1(0x08): Display Mode
+		void gp1DisplayMode(uint32_t val);
 
 		// Linkage to the communications bus
 		bus::Bus *mBus = nullptr;
