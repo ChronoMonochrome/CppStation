@@ -404,7 +404,7 @@ namespace bus {
 
 				auto command = mRam.load32(addr);
 
-				panic("GPU command {:08x}", command);
+				mGpu.gp0(command);
 
 				remsz -= 1;
 			}

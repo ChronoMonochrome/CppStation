@@ -166,6 +166,12 @@ namespace gpu {
 		// GP0(0xE1): Draw Mode
 		void gp0DrawMode(uint32_t val);
 
+		// GP0(0xE3): Set Drawing Area top left
+		void gp0DrawingAreaTopLeft(uint32_t val);
+
+		// GP0(0xE4): Set Drawing Area bottom right
+		void gp0DrawingAreaBottomRight(uint32_t val);
+
 		// Handle writes to the GP1 command register
 		void gp1(uint32_t val);
 

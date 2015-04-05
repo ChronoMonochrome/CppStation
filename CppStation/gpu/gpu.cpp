@@ -153,6 +153,12 @@ namespace gpu
 		case 0xe1:
 			gp0DrawMode(val);
 			break;
+		case 0xe3:
+			gp0DrawingAreaTopLeft(val);
+			break;
+		case 0xe4:
+			gp0DrawingAreaBottomRight(val);
+			break;
 		default:
 			panic("Unhandled GP0 command {:08x}", val);
 		}
@@ -186,6 +192,18 @@ namespace gpu
 		mTextureDisable = ((val >> 11) & 1) != 0;
 		mRectangleTextureXFlip = ((val >> 12) & 1) != 0;
 		mRectangleTextureYFlip = ((val >> 13) & 1) != 0;
+	}
+
+	void Gpu::gp0DrawingAreaTopLeft(uint32_t val)
+	{
+		mDrawingAreaTop = ((val >> 10) & 0x3ff);
+		mDrawingAreaLeft = (val & 0x3ff);
+	}
+
+	void Gpu::gp0DrawingAreaBottomRight(uint32_t val)
+	{
+		mDrawingAreaBottom = ((val >> 10) & 0x3ff);
+		mDrawingAreaRight = (val & 0x3ff);
 	}
 
 	void Gpu::gp1(uint32_t val)
