@@ -128,6 +128,9 @@ namespace bus {
 			case 0:
 				mGpu.gp0(val);
 				break;
+			case 4:
+				mGpu.gp1(val);
+				break;
 			default:
 				panic("GPU write {}: {:08x}", offset, val);
 			}
@@ -399,7 +402,7 @@ namespace bus {
 
 				auto command = mRam.load32(addr);
 
-				println("GPU command {:08x}", command);
+				panic("GPU command {:08x}", command);
 
 				remsz -= 1;
 			}

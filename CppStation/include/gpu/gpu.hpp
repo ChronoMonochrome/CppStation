@@ -89,6 +89,14 @@ namespace gpu {
 		uint8_t mSemiTransparency;
 		// Texture page color depth
 		TextureDepth mTextureDepth;
+		// Texture window x mask (8 pixel steps)
+		uint8_t mTextureWindowXMask;
+		// Texture window y mask (8 pixel steps)
+		uint8_t mTextureWindowYMask;
+		// Texture window x offset (8 pixel steps)
+		uint8_t mTextureWindowXOffset;
+		// Texture window y offset (8 pixel steps)
+		uint8_t mTextureWindowYOffset;
 		// Enable dithering from 24 to 15bits RGB
 		bool mDithering;
 		// Allow drawing to the display area
@@ -98,6 +106,18 @@ namespace gpu {
 		bool mForceSetMaskBit;
 		// Don't draw to pixels which have the "mask" bit set
 		bool mPreserveMaskedPixels;
+		// Left-most column of drawing area
+		uint16_t mDrawingAreaLeft;
+		// Top-most line of drawing area
+		uint16_t mDrawingAreaTop;
+		// Right-most column of drawing area
+		uint16_t mDrawingAreaRight;
+		// Bottom-most line of drawing area
+		uint16_t mDrawingAreaBottom;
+		// Horizontal drawing offset applied to all vertex
+		int16_t mDrawingXOffset;
+		// Vertical drawing offset applied to all vertex
+		int16_t mDrawingYOffset;
 		// Currently displayed field. For progressive output this is
 		// always Top.
 		Field mField;
@@ -117,6 +137,18 @@ namespace gpu {
 		bool mInterlaced;
 		// Disable the display
 		bool mDisplayDisabled;
+		// First column of the display area in VRAM
+		uint16_t mDisplayVramXStart;
+		// First line of the display area in VRAM
+		uint16_t mDisplayVramYStart;
+		// Display output horizontal start relative to HSYNC
+		uint16_t mDisplayHorizStart;
+		// Display output horizontal end relative to HSYNC
+		uint16_t mDisplayHorizEnd;
+		// Display output first line relative to VSYNC
+		uint16_t mDisplayLineStart;
+		// Display output last line relative to VSYNC
+		uint16_t mDisplayLineEnd;
 		// True when the interrupt is active
 		bool mInterrupt;
 		// DMA request direction
@@ -128,8 +160,14 @@ namespace gpu {
 		// Handle writes to the GP0 command register
 		void gp0(uint32_t val);
 
-		// GP0(0xE1) command
+		// GP0(0xE1): Draw Mode
 		void gp0DrawMode(uint32_t val);
+
+		// Handle writes to the GP1 command register
+		void gp1(uint32_t val);
+
+		// GP1(0x00): soft reset
+		void gp1Reset(uint32_t val);
 
 		// Linkage to the communications bus
 		bus::Bus *mBus = nullptr;

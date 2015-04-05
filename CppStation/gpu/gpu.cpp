@@ -29,10 +29,20 @@ namespace gpu
 		mRectangleTextureYFlip(false),
 		mSemiTransparency(0),
 		mTextureDepth(TextureDepth::T4Bit),
+		mTextureWindowXMask(0),
+		mTextureWindowYMask(0),
+		mTextureWindowXOffset(0),
+		mTextureWindowYOffset(0),
 		mDithering(false),
 		mDrawToDisplay(false),
 		mForceSetMaskBit(false),
 		mPreserveMaskedPixels(false),
+		mDrawingAreaLeft(0),
+		mDrawingAreaTop(0),
+		mDrawingAreaRight(0),
+		mDrawingAreaBottom(0),
+		mDrawingXOffset(0),
+		mDrawingYOffset(0),
 		mField(Field::Top),
 		mTextureDisable(false),
 		mHres(HorizontalRes::fromFields(0, 0)),
@@ -41,6 +51,12 @@ namespace gpu
 		mDisplayDepth(DisplayDepth::D15Bits),
 		mInterlaced(false),
 		mDisplayDisabled(true),
+		mDisplayVramXStart(0),
+		mDisplayVramYStart(0),
+		mDisplayHorizStart(0x200),
+		mDisplayHorizEnd(0xc00),
+		mDisplayLineStart(0x10),
+		mDisplayLineEnd(0x100),
 		mInterrupt(false),
 		mDmaDirection(DmaDirection::Off)
 	{
@@ -132,7 +148,7 @@ namespace gpu
 			gp0DrawMode(val);
 			break;
 		default:
-			panic("Unhandled GP0 opcode {:02x} ({:08x})", opcode, val);
+			panic("Unhandled GP0 command {:08x}", val);
 		}
 	}
 
@@ -165,4 +181,66 @@ namespace gpu
 		mRectangleTextureXFlip = ((val >> 12) & 1) != 0;
 		mRectangleTextureYFlip = ((val >> 13) & 1) != 0;
 	}
+
+	void Gpu::gp1(uint32_t val)
+	{
+		auto opcode = (val >> 24) & 0xff;
+
+		switch (opcode)
+		{
+		case 0x00:
+			gp1Reset(val);
+			break;
+		default:
+			panic("Unhandled GP1 command {:08x}", val);
+		}
+	}
+
+	void Gpu::gp1Reset(uint32_t val)
+	{
+		(void)val;
+		mInterrupt = false;
+
+		mPageBaseX = 0;
+		mPageBaseY = 0;
+		mSemiTransparency = 0;
+		mTextureDepth = TextureDepth::T4Bit;
+		mTextureWindowXMask = 0;
+		mTextureWindowYMask = 0;
+		mTextureWindowXOffset = 0;
+		mTextureWindowYOffset = 0;
+		mDithering = false;
+		mDrawToDisplay = false;
+		mTextureDisable = false;
+		mRectangleTextureXFlip = false;
+		mRectangleTextureYFlip = false;
+		mDrawingAreaLeft = 0;
+		mDrawingAreaTop = 0;
+		mDrawingAreaRight = 0;
+		mDrawingAreaBottom = 0;
+		mDrawingXOffset = 0;
+		mDrawingYOffset = 0;
+		mForceSetMaskBit = false;
+		mPreserveMaskedPixels = false;
+
+		mDmaDirection = DmaDirection::Off;
+
+		mDisplayDisabled = true;
+		mDisplayVramXStart = 0;
+		mDisplayVramYStart = 0;
+		mHres = HorizontalRes::fromFields(0, 0);
+		mVres = VerticalRes::Y240Lines;
+
+		// XXX does PAL hardware reset to this config as well?
+		mVmode = VMode::Ntsc;
+		mInterlaced = true;
+		mDisplayHorizStart = 0x200;
+		mDisplayHorizEnd = 0xc00;
+		mDisplayLineStart = 0x10;
+		mDisplayLineEnd = 0x100;
+		mDisplayDepth = DisplayDepth::D15Bits;
+
+		// XXX should also clear the command FIFO when we implement it
+		// XXX should also invalidate GPU cache if we ever implement it
+    }
 }
