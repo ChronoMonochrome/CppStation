@@ -153,6 +153,9 @@ namespace gpu
 		case 0xe1:
 			gp0DrawMode(val);
 			break;
+		case 0xe2:
+			gp0TextureWindow(val);
+			break;
 		case 0xe3:
 			gp0DrawingAreaTopLeft(val);
 			break;
@@ -195,6 +198,14 @@ namespace gpu
 		mTextureDisable = ((val >> 11) & 1) != 0;
 		mRectangleTextureXFlip = ((val >> 12) & 1) != 0;
 		mRectangleTextureYFlip = ((val >> 13) & 1) != 0;
+	}
+
+	void Gpu::gp0TextureWindow(uint32_t val)
+	{
+		mTextureWindowXMask = (val & 0x1f);
+		mTextureWindowYMask = ((val >> 5) & 0x1f);
+		mTextureWindowXOffset = ((val >> 10) & 0x1f);
+		mTextureWindowYOffset = ((val >> 15) & 0x1f);
 	}
 
 	void Gpu::gp0DrawingAreaTopLeft(uint32_t val)

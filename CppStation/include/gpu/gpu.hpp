@@ -166,6 +166,9 @@ namespace gpu {
 		// GP0(0xE1): Draw Mode
 		void gp0DrawMode(uint32_t val);
 
+		// GP0(0xE2): Set Texture Window
+		void gp0TextureWindow(uint32_t val);
+
 		// GP0(0xE3): Set Drawing Area top left
 		void gp0DrawingAreaTopLeft(uint32_t val);
 
