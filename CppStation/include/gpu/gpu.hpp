@@ -193,6 +193,12 @@ namespace gpu {
 		// GP1(0x05): Display VRAM Start
 		void gp1DisplayVramStart(uint32_t val);
 
+		// GP1(0x06): Display Horizontal Range
+		void gp1DisplayHorizontalRange(uint32_t val);
+
+		// GP1(0x07): Display Vertical  Range
+		void gp1DisplayVerticalRange(uint32_t val);
+
 		// GP1(0x08): Display Mode
 		void gp1DisplayMode(uint32_t val);
 

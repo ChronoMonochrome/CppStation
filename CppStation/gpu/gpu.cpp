@@ -255,6 +255,12 @@ namespace gpu
 		case 0x05:
 			gp1DisplayVramStart(val);
 			break;
+		case 0x06:
+			gp1DisplayHorizontalRange(val);
+			break;
+		case 0x07:
+			gp1DisplayVerticalRange(val);
+			break;
 		case 0x08:
 			gp1DisplayMode(val);
 			break;
@@ -334,6 +340,18 @@ namespace gpu
 	{
 		mDisplayVramXStart = (val & 0x3fe);
 		mDisplayVramYStart = ((val >> 10) & 0x1ff);
+	}
+
+	void Gpu::gp1DisplayHorizontalRange(uint32_t val)
+	{
+		mDisplayHorizStart = (val & 0xfff);
+		mDisplayHorizEnd   = ((val >> 12) & 0xfff);
+	}
+
+	void Gpu::gp1DisplayVerticalRange(uint32_t val)
+	{
+		mDisplayLineStart = (val & 0x3ff);
+		mDisplayLineEnd   = ((val >> 10) & 0x3ff);
 	}
 
 	void Gpu::gp1DisplayMode(uint32_t val)
