@@ -159,6 +159,9 @@ namespace gpu
 		case 0xe4:
 			gp0DrawingAreaBottomRight(val);
 			break;
+		case 0xe5:
+			gp0DrawingOffset(val);
+			break;
 		default:
 			panic("Unhandled GP0 command {:08x}", val);
 		}
@@ -204,6 +207,17 @@ namespace gpu
 	{
 		mDrawingAreaBottom = ((val >> 10) & 0x3ff);
 		mDrawingAreaRight = (val & 0x3ff);
+	}
+
+	void Gpu::gp0DrawingOffset(uint32_t val)
+	{
+		uint16_t x = (val & 0x7ff);
+		uint16_t y = ((val >> 11) & 0x7ff);
+
+		// Values are 11bit two's complement signed values, we need to
+		// shift the value to 16bits to force sign extension
+		mDrawingXOffset = ((int16_t)(x << 5)) >> 5;
+		mDrawingYOffset = ((int16_t)(y << 5)) >> 5;
 	}
 
 	void Gpu::gp1(uint32_t val)

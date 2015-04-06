@@ -172,6 +172,9 @@ namespace gpu {
 		// GP0(0xE4): Set Drawing Area bottom right
 		void gp0DrawingAreaBottomRight(uint32_t val);
 
+		// GP0(0xE5): Set Drawing Offset
+		void gp0DrawingOffset(uint32_t val);
+
 		// Handle writes to the GP1 command register
 		void gp1(uint32_t val);
 
