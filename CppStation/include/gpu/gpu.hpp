@@ -190,6 +190,9 @@ namespace gpu {
 		// GP1(0x04): DMA Direction
 		void gp1DmaDirection(uint32_t val);
 
+		// GP1(0x05): Display VRAM Start
+		void gp1DisplayVramStart(uint32_t val);
+
 		// GP1(0x08): Display Mode
 		void gp1DisplayMode(uint32_t val);
 

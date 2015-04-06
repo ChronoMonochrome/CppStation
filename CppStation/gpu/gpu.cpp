@@ -252,6 +252,9 @@ namespace gpu
 		case 0x04:
 			gp1DmaDirection(val);
 			break;
+		case 0x05:
+			gp1DisplayVramStart(val);
+			break;
 		case 0x08:
 			gp1DisplayMode(val);
 			break;
@@ -325,6 +328,12 @@ namespace gpu
 			mDmaDirection = DmaDirection::VRamToCpu;
 			break;
 		};
+	}
+
+	void Gpu::gp1DisplayVramStart(uint32_t val)
+	{
+		mDisplayVramXStart = (val & 0x3fe);
+		mDisplayVramYStart = ((val >> 10) & 0x1ff);
 	}
 
 	void Gpu::gp1DisplayMode(uint32_t val)
