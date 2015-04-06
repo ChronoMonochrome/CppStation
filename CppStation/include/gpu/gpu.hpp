@@ -69,6 +69,25 @@ namespace gpu {
 		VRamToCpu = 3,
 	};
 
+	class CommandBuffer
+	{
+	public:
+		CommandBuffer();
+		~CommandBuffer();
+		// Command buffer: the longuest possible command is GP0(0x3E)
+		// which takes 12 parameters
+		uint32_t mBuffer[12];
+		// Number of words queued in buffer
+		uint8_t mLen;
+
+		// Clear the command buffer
+		void clear();
+
+		void pushWord(uint32_t word);
+
+		uint32_t & operator[](uint32_t index);
+	};
+
 	class Gpu
 	{
 	public:
@@ -154,6 +173,13 @@ namespace gpu {
 		// DMA request direction
 		DmaDirection mDmaDirection;
 
+		// Buffer containing the current GP0 command
+		CommandBuffer mGp0Command;
+		// Remaining words for the current GP0 command
+		uint32_t mGp0CommandRemaining;
+		// Pointer to the method implementing the current GP) command
+		void (Gpu::*mGp0CommandMethod)();
+
 		// Retreive value of the status register
 		uint32_t status();
 
@@ -163,23 +189,26 @@ namespace gpu {
 		// Handle writes to the GP0 command register
 		void gp0(uint32_t val);
 
+		// GP0(0x00): No Operation
+		void gp0Nop();
+
 		// GP0(0xE1): Draw Mode
-		void gp0DrawMode(uint32_t val);
+		void gp0DrawMode();
 
 		// GP0(0xE2): Set Texture Window
-		void gp0TextureWindow(uint32_t val);
+		void gp0TextureWindow();
 
 		// GP0(0xE3): Set Drawing Area top left
-		void gp0DrawingAreaTopLeft(uint32_t val);
+		void gp0DrawingAreaTopLeft();
 
 		// GP0(0xE4): Set Drawing Area bottom right
-		void gp0DrawingAreaBottomRight(uint32_t val);
+		void gp0DrawingAreaBottomRight();
 
 		// GP0(0xE5): Set Drawing Offset
-		void gp0DrawingOffset(uint32_t val);
+		void gp0DrawingOffset();
 
 		// GP0(0xE6): Set Mask Bit Setting
-		void gp0MaskBitSetting(uint32_t val);
+		void gp0MaskBitSetting();
 
 		// Handle writes to the GP1 command register
 		void gp1(uint32_t val);

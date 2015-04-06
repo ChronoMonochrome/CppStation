@@ -22,6 +22,32 @@ namespace gpu
 		return mHr << 16;
 	}
 
+	CommandBuffer::CommandBuffer() : mLen(0)
+	{
+		for (int i = 0; i < 12; i++)
+			mBuffer[i] = 0;
+	}
+
+	CommandBuffer::~CommandBuffer()
+	{
+	}
+
+	void CommandBuffer::clear()
+	{
+		mLen = 0;
+	}
+
+	void CommandBuffer::pushWord(uint32_t word)
+	{
+		mBuffer[mLen] = word;
+		mLen++;
+	}
+
+	uint32_t & CommandBuffer::operator[](uint32_t index)
+	{
+		return mBuffer[index];
+	}
+
 	Gpu::Gpu() :
 		mPageBaseX(0),
 		mPageBaseY(0),
@@ -58,7 +84,9 @@ namespace gpu
 		mDisplayLineStart(0x10),
 		mDisplayLineEnd(0x100),
 		mInterrupt(false),
-		mDmaDirection(DmaDirection::Off)
+		mDmaDirection(DmaDirection::Off),
+		mGp0CommandRemaining(0),
+		mGp0CommandMethod(&Gpu::gp0Nop)
 	{
 	}
 
@@ -144,37 +172,59 @@ namespace gpu
 
 	void Gpu::gp0(uint32_t val)
 	{
-		auto opcode = (val >> 24) & 0xff;
-
-		switch (opcode)
+		if (mGp0CommandRemaining == 0)
 		{
-		case 0x00:
-			break; // NOP
-		case 0xe1:
-			gp0DrawMode(val);
-			break;
-		case 0xe2:
-			gp0TextureWindow(val);
-			break;
-		case 0xe3:
-			gp0DrawingAreaTopLeft(val);
-			break;
-		case 0xe4:
-			gp0DrawingAreaBottomRight(val);
-			break;
-		case 0xe5:
-			gp0DrawingOffset(val);
-			break;
-		case 0xe6:
-			gp0MaskBitSetting(val);
-			break;
-		default:
-			panic("Unhandled GP0 command {:08x}", val);
+			// We start a new GP0 command
+			auto opcode = (val >> 24) & 0xff;
+
+			switch (opcode)
+			{
+			case 0x00:
+				mGp0CommandRemaining = 1;
+				mGp0CommandMethod = &Gpu::gp0Nop;
+				break;
+			case 0xe1:
+				mGp0CommandRemaining = 1;
+				mGp0CommandMethod = &Gpu::gp0DrawMode;
+				break;
+			case 0xe2:
+				mGp0CommandRemaining = 1;
+				mGp0CommandMethod = &Gpu::gp0TextureWindow;
+				break;
+			case 0xe3:
+				mGp0CommandRemaining = 1;
+				mGp0CommandMethod = &Gpu::gp0DrawingAreaTopLeft;
+				break;
+			case 0xe4:
+				mGp0CommandRemaining = 1;
+				mGp0CommandMethod = &Gpu::gp0DrawingAreaBottomRight;
+				break;
+			case 0xe5:
+				mGp0CommandRemaining = 1;
+				mGp0CommandMethod = &Gpu::gp0DrawingOffset;
+				break;
+			case 0xe6:
+				mGp0CommandRemaining = 1;
+				mGp0CommandMethod = &Gpu::gp0MaskBitSetting;
+				break;
+			default:
+				panic("Unhandled GP0 command {:08x}", val);
+			}
+
+			mGp0Command.clear();
 		}
+
+		mGp0Command.pushWord(val);
+		mGp0CommandRemaining--;
+
+		if (mGp0CommandRemaining == 0)
+			// We have all the parameters, we can run the command
+			((*this).*mGp0CommandMethod)();
 	}
 
-	void Gpu::gp0DrawMode(uint32_t val)
+	void Gpu::gp0DrawMode()
 	{
+		uint32_t val = mGp0Command[0];
 		mPageBaseX = val & 0xf;
 		mPageBaseY = (val >> 4) & 1;
 		mSemiTransparency = (val >> 5) & 3;
@@ -203,28 +253,37 @@ namespace gpu
 		mRectangleTextureYFlip = ((val >> 13) & 1) != 0;
 	}
 
-	void Gpu::gp0TextureWindow(uint32_t val)
+	void Gpu::gp0Nop()
 	{
+		// NOP
+	}
+
+	void Gpu::gp0TextureWindow()
+	{
+		uint32_t val = mGp0Command[0];
 		mTextureWindowXMask = (val & 0x1f);
 		mTextureWindowYMask = ((val >> 5) & 0x1f);
 		mTextureWindowXOffset = ((val >> 10) & 0x1f);
 		mTextureWindowYOffset = ((val >> 15) & 0x1f);
 	}
 
-	void Gpu::gp0DrawingAreaTopLeft(uint32_t val)
+	void Gpu::gp0DrawingAreaTopLeft()
 	{
+		uint32_t val = mGp0Command[0];
 		mDrawingAreaTop = ((val >> 10) & 0x3ff);
 		mDrawingAreaLeft = (val & 0x3ff);
 	}
 
-	void Gpu::gp0DrawingAreaBottomRight(uint32_t val)
+	void Gpu::gp0DrawingAreaBottomRight()
 	{
+		uint32_t val = mGp0Command[0];
 		mDrawingAreaBottom = ((val >> 10) & 0x3ff);
 		mDrawingAreaRight = (val & 0x3ff);
 	}
 
-	void Gpu::gp0DrawingOffset(uint32_t val)
+	void Gpu::gp0DrawingOffset()
 	{
+		uint32_t val = mGp0Command[0];
 		uint16_t x = (val & 0x7ff);
 		uint16_t y = ((val >> 11) & 0x7ff);
 
@@ -234,8 +293,9 @@ namespace gpu
 		mDrawingYOffset = ((int16_t)(y << 5)) >> 5;
 	}
 
-	void Gpu::gp0MaskBitSetting(uint32_t val)
+	void Gpu::gp0MaskBitSetting()
 	{
+		uint32_t val = mGp0Command[0];
 		mForceSetMaskBit = (val & 1) != 0;
 		mPreserveMaskedPixels = (val & 2) != 0;
 	}
