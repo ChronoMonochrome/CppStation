@@ -165,6 +165,9 @@ namespace gpu
 		case 0xe5:
 			gp0DrawingOffset(val);
 			break;
+		case 0xe6:
+			gp0MaskBitSetting(val);
+			break;
 		default:
 			panic("Unhandled GP0 command {:08x}", val);
 		}
@@ -229,6 +232,12 @@ namespace gpu
 		// shift the value to 16bits to force sign extension
 		mDrawingXOffset = ((int16_t)(x << 5)) >> 5;
 		mDrawingYOffset = ((int16_t)(y << 5)) >> 5;
+	}
+
+	void Gpu::gp0MaskBitSetting(uint32_t val)
+	{
+		mForceSetMaskBit = (val & 1) != 0;
+		mPreserveMaskedPixels = (val & 2) != 0;
 	}
 
 	void Gpu::gp1(uint32_t val)
