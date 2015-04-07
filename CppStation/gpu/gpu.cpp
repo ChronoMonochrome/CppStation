@@ -170,6 +170,7 @@ namespace gpu
 	uint32_t Gpu::read()
 	{
 		// Not implemented for now...
+		println("GPUREAD");
 		return 0;
 	}
 
@@ -197,6 +198,10 @@ namespace gpu
 			case 0xa0:
 				mGp0WordsRemaining = 3;
 				mGp0CommandMethod = &Gpu::gp0ImageLoad;
+				break;
+			case 0xc0:
+				mGp0WordsRemaining = 3;
+				mGp0CommandMethod = &Gpu::gp0ImageStore;
 				break;
 			case 0xe1:
 				mGp0WordsRemaining = 1;
@@ -315,6 +320,17 @@ namespace gpu
 
 		// Put the GP0 state machine in ImageLoad mode
 		mGp0Mode = Gp0Mode::ImageLoad;
+	}
+
+	void Gpu::gp0ImageStore()
+	{
+		// Parameter 2 contains the image resolution
+		auto res = mGp0Command[2];
+
+		auto width  = res & 0xffff;
+		auto height = res >> 16;
+
+		println("Unhandled image store: {}x{}", width, height);
 	}
 
 	void Gpu::gp0TextureWindow()

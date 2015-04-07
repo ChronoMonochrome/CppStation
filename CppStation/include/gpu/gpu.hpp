@@ -211,6 +211,9 @@ namespace gpu {
 		// GP0(0xA0): Image Load
 		void gp0ImageLoad();
 
+		// GP0(0xC0): Image Store
+		void gp0ImageStore();
+
 		// GP0(0xE1): Draw Mode
 		void gp0DrawMode();
 
