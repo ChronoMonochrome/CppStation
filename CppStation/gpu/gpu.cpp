@@ -368,6 +368,9 @@ namespace gpu
 		case 0x00:
 			gp1Reset(val);
 			break;
+		case 0x03:
+			gp1DisplayEnable(val);
+			break;
 		case 0x04:
 			gp1DmaDirection(val);
 			break;
@@ -435,6 +438,11 @@ namespace gpu
 		// XXX should also clear the command FIFO when we implement it
 		// XXX should also invalidate GPU cache if we ever implement it
     }
+
+	void Gpu::gp1DisplayEnable(uint32_t val)
+	{
+		mDisplayDisabled = ((val & 1) != 0);
+	}
 
 	void Gpu::gp1DmaDirection(uint32_t val)
 	{
