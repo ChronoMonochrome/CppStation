@@ -110,7 +110,9 @@ namespace gpu
 		// Bit 14: not supported
 		r |= mTextureDisable << 15;
 		r |= mHres.infoStatus();
-		r |= ((uint32_t)mVres) << 19;
+        // XXX Temporary hack: if we don't emulate bit 31 correctly
+        // setting `vres` to 1 locks the BIOS:
+		//r |= ((uint32_t)mVres) << 19;
 		r |= ((uint32_t)mVmode) << 20;
 		r |= ((uint32_t)mDisplayDepth) << 21;
 		r |= mInterlaced << 22;
