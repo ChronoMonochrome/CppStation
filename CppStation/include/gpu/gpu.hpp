@@ -7,6 +7,14 @@ namespace bus {
 }
 
 namespace gpu {
+	// Possible states for the GP0 command register
+	enum class Gp0Mode {
+		// Default mode: handling commands
+		Command,
+		// Loading an image into VRAM
+		ImageLoad,
+	};
+
 	// Depth of the pixel values in a texture page
 	enum class TextureDepth
 	{
@@ -176,9 +184,11 @@ namespace gpu {
 		// Buffer containing the current GP0 command
 		CommandBuffer mGp0Command;
 		// Remaining words for the current GP0 command
-		uint32_t mGp0CommandRemaining;
+		uint32_t mGp0WordsRemaining;
 		// Pointer to the method implementing the current GP) command
 		void (Gpu::*mGp0CommandMethod)();
+		// Current mode of the GP0 register
+		Gp0Mode mGp0Mode;
 
 		// Retreive value of the status register
 		uint32_t status();
@@ -197,6 +207,9 @@ namespace gpu {
 
 		// GP0(0x28): Monochrome Opaque Quadrilateral
 		void gp0QuadMonoOpaque();
+
+		// GP0(0xA0): Image Load
+		void gp0ImageLoad();
 
 		// GP0(0xE1): Draw Mode
 		void gp0DrawMode();

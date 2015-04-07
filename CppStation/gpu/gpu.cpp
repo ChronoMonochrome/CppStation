@@ -85,8 +85,9 @@ namespace gpu
 		mDisplayLineEnd(0x100),
 		mInterrupt(false),
 		mDmaDirection(DmaDirection::Off),
-		mGp0CommandRemaining(0),
-		mGp0CommandMethod(&Gpu::gp0Nop)
+		mGp0WordsRemaining(0),
+		mGp0CommandMethod(&Gpu::gp0Nop),
+		mGp0Mode(Gp0Mode::Command)
 	{
 	}
 
@@ -174,7 +175,7 @@ namespace gpu
 
 	void Gpu::gp0(uint32_t val)
 	{
-		if (mGp0CommandRemaining == 0)
+		if (mGp0WordsRemaining == 0)
 		{
 			// We start a new GP0 command
 			auto opcode = (val >> 24) & 0xff;
@@ -182,39 +183,43 @@ namespace gpu
 			switch (opcode)
 			{
 			case 0x00:
-				mGp0CommandRemaining = 1;
+				mGp0WordsRemaining = 1;
 				mGp0CommandMethod = &Gpu::gp0Nop;
 				break;
 			case 0x01:
-				mGp0CommandRemaining = 1;
+				mGp0WordsRemaining = 1;
 				mGp0CommandMethod = &Gpu::gp0ClearCache;
 				break;
 			case 0x28:
-				mGp0CommandRemaining = 5;
+				mGp0WordsRemaining = 5;
 				mGp0CommandMethod = &Gpu::gp0QuadMonoOpaque;
 				break;
+			case 0xa0:
+				mGp0WordsRemaining = 3;
+				mGp0CommandMethod = &Gpu::gp0ImageLoad;
+				break;
 			case 0xe1:
-				mGp0CommandRemaining = 1;
+				mGp0WordsRemaining = 1;
 				mGp0CommandMethod = &Gpu::gp0DrawMode;
 				break;
 			case 0xe2:
-				mGp0CommandRemaining = 1;
+				mGp0WordsRemaining = 1;
 				mGp0CommandMethod = &Gpu::gp0TextureWindow;
 				break;
 			case 0xe3:
-				mGp0CommandRemaining = 1;
+				mGp0WordsRemaining = 1;
 				mGp0CommandMethod = &Gpu::gp0DrawingAreaTopLeft;
 				break;
 			case 0xe4:
-				mGp0CommandRemaining = 1;
+				mGp0WordsRemaining = 1;
 				mGp0CommandMethod = &Gpu::gp0DrawingAreaBottomRight;
 				break;
 			case 0xe5:
-				mGp0CommandRemaining = 1;
+				mGp0WordsRemaining = 1;
 				mGp0CommandMethod = &Gpu::gp0DrawingOffset;
 				break;
 			case 0xe6:
-				mGp0CommandRemaining = 1;
+				mGp0WordsRemaining = 1;
 				mGp0CommandMethod = &Gpu::gp0MaskBitSetting;
 				break;
 			default:
@@ -224,12 +229,23 @@ namespace gpu
 			mGp0Command.clear();
 		}
 
-		mGp0Command.pushWord(val);
-		mGp0CommandRemaining--;
+		mGp0WordsRemaining--;
 
-		if (mGp0CommandRemaining == 0)
-			// We have all the parameters, we can run the command
-			((*this).*mGp0CommandMethod)();
+		switch (mGp0Mode)
+		{
+		case Gp0Mode::Command:
+			mGp0Command.pushWord(val);
+			if (mGp0WordsRemaining == 0)
+				// We have all the parameters, we can run the command
+				((*this).*mGp0CommandMethod)();
+			break;
+		case Gp0Mode::ImageLoad:
+			// XXX Should copy pixel data to VRAM
+			if (mGp0WordsRemaining == 0)
+				// Load done, switch back to command mode
+				mGp0Mode = Gp0Mode::Command;
+			break;
+		}
 	}
 
 	void Gpu::gp0DrawMode()
@@ -276,6 +292,29 @@ namespace gpu
 	void Gpu::gp0QuadMonoOpaque()
 	{
 		println("Draw quad");
+	}
+
+	void Gpu::gp0ImageLoad()
+	{
+		// Parameter 2 contains the image resolution
+		auto res = mGp0Command[2];
+
+		auto width  = res & 0xffff;
+		auto height = res >> 16;
+
+		// Size of the image in 16bit pixels
+		auto imgsize = width * height;
+
+		// If we have an odd number of pixels we must round up since
+		// we transfer 32bits at a time. There'll be 16bits of padding
+		// in the last word.
+		imgsize = (imgsize + 1) & ~1;
+
+		// Store number of words expected for this image
+		mGp0WordsRemaining = imgsize / 2;
+
+		// Put the GP0 state machine in ImageLoad mode
+		mGp0Mode = Gp0Mode::ImageLoad;
 	}
 
 	void Gpu::gp0TextureWindow()

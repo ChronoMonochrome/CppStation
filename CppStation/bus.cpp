@@ -471,7 +471,7 @@ namespace bus {
 				switch (port)
 				{
 				case dma::Port::Gpu:
-					println("GPU data {:08x}", src_word);
+					mGpu.gp0(src_word);
 					break;
 				default:
 					panic("Unhandled DMA destination port {}", (uint8_t)port);
