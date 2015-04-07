@@ -192,6 +192,9 @@ namespace gpu {
 		// GP0(0x00): No Operation
 		void gp0Nop();
 
+		// GP0(0x01): Clear Cache
+		void gp0ClearCache();
+
 		// GP0(0x28): Monochrome Opaque Quadrilateral
 		void gp0QuadMonoOpaque();
 

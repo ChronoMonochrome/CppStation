@@ -185,6 +185,10 @@ namespace gpu
 				mGp0CommandRemaining = 1;
 				mGp0CommandMethod = &Gpu::gp0Nop;
 				break;
+			case 0x01:
+				mGp0CommandRemaining = 1;
+				mGp0CommandMethod = &Gpu::gp0ClearCache;
+				break;
 			case 0x28:
 				mGp0CommandRemaining = 5;
 				mGp0CommandMethod = &Gpu::gp0QuadMonoOpaque;
@@ -262,6 +266,11 @@ namespace gpu
 	void Gpu::gp0Nop()
 	{
 		// NOP
+	}
+
+	void Gpu::gp0ClearCache()
+	{
+		// Not implemented
 	}
 
 	void Gpu::gp0QuadMonoOpaque()
