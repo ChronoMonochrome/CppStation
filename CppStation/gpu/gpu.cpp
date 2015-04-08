@@ -195,6 +195,10 @@ namespace gpu
 				mGp0WordsRemaining = 5;
 				mGp0CommandMethod = &Gpu::gp0QuadMonoOpaque;
 				break;
+			case 0x30:
+				mGp0WordsRemaining = 6;
+				mGp0CommandMethod = &Gpu::gp0TriangleShadedOpaque;
+				break;
 			case 0x38:
 				mGp0WordsRemaining = 8;
 				mGp0CommandMethod = &Gpu::gp0QuadShadedOpaque;
@@ -301,6 +305,11 @@ namespace gpu
 	void Gpu::gp0QuadMonoOpaque()
 	{
 		println("Draw quad");
+	}
+
+	void Gpu::gp0TriangleShadedOpaque()
+	{
+		println("Draw triangle shaded");
 	}
 
 	void Gpu::gp0QuadShadedOpaque()
