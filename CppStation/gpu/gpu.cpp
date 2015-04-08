@@ -411,6 +411,9 @@ namespace gpu
 		case 0x00:
 			gp1Reset(val);
 			break;
+		case 0x02:
+			gp1AcknowledgeIrq();
+			break;
 		case 0x03:
 			gp1DisplayEnable(val);
 			break;
@@ -481,6 +484,11 @@ namespace gpu
 		// XXX should also clear the command FIFO when we implement it
 		// XXX should also invalidate GPU cache if we ever implement it
     }
+
+	void Gpu::gp1AcknowledgeIrq()
+	{
+		mInterrupt = false;
+	}
 
 	void Gpu::gp1DisplayEnable(uint32_t val)
 	{

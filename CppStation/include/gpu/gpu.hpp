@@ -247,6 +247,9 @@ namespace gpu {
 		// GP1(0x00): soft reset
 		void gp1Reset(uint32_t val);
 
+		// GP1(0x02): Acknowledge Interrupt
+		void gp1AcknowledgeIrq();
+
 		// GP1(0x03): Display Enable
 		void gp1DisplayEnable(uint32_t val);
 
