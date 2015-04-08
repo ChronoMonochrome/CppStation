@@ -208,6 +208,9 @@ namespace gpu {
 		// GP0(0x28): Monochrome Opaque Quadrilateral
 		void gp0QuadMonoOpaque();
 
+		// GP0(0x2C): Textured Opaque Quadrilateral
+		void gp0QuadTextureBlendOpaque();
+
 		// GP0(0x30): Shaded Opaque Triangle
 		void gp0TriangleShadedOpaque();
 
