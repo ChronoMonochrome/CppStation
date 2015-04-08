@@ -411,6 +411,9 @@ namespace gpu
 		case 0x00:
 			gp1Reset(val);
 			break;
+		case 0x01:
+			gp1ResetCommandBuffer();
+			break;
 		case 0x02:
 			gp1AcknowledgeIrq();
 			break;
@@ -481,9 +484,19 @@ namespace gpu
 		mDisplayLineEnd = 0x100;
 		mDisplayDepth = DisplayDepth::D15Bits;
 
-		// XXX should also clear the command FIFO when we implement it
+		gp1ResetCommandBuffer();
+		gp1AcknowledgeIrq();
+
 		// XXX should also invalidate GPU cache if we ever implement it
     }
+
+	void Gpu::gp1ResetCommandBuffer()
+	{
+		mGp0Command.clear();
+		mGp0WordsRemaining = 0;
+		mGp0Mode = Gp0Mode::Command;
+		// XXX should also clear the command FIFO when we implement it
+	}
 
 	void Gpu::gp1AcknowledgeIrq()
 	{
