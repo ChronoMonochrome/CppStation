@@ -56,7 +56,14 @@ namespace bus {
 			}
 		}
 
-		panic("{}: Unhandled read at {:08x}", __func__, abs_addr);
+		offset = mMap.mTIMERS.contains(abs_addr);
+		if (offset != -1)
+		{
+			println("Unhandled read from timer register {:x}", offset);
+			return 0;
+		}
+
+		panic("{}: Unhandled load32 at address {:08x}", __func__, abs_addr);
 	}
 
 	void Bus::store32(uint32_t addr, uint32_t val)
