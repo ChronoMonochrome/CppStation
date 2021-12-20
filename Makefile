@@ -1,6 +1,6 @@
 CXX := c++
 STRIP := strip
-FLAGS := -std=c++2a -O2 -Wall -I ./include
+FLAGS := -std=c++14 -O2 -Wall -I ./include
 LDFLAGS := -static-libstdc++ libfmt.a
 
 TARGET = cppstation.exe

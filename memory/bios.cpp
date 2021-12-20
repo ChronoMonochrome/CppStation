@@ -10,7 +10,7 @@ namespace bios {
 	{
 	}
 	
-	void Bios::loadFromFile(std::string &path)
+	auto Bios::loadFromFile(std::string &path) -> cpp::result<uint64_t, std::string>
 	{
 		std::ifstream ifs;
 		ifs.open(path, std::ifstream::binary);
@@ -24,8 +24,15 @@ namespace bios {
 				mBuffer.resize(bufferSize);
 				ifs.read((char*)mBuffer.data(), mBuffer.size());
 			}
+			return bufferSize;
 		}
 		ifs.close();
+
+		if (errno != 0) {
+			return cpp::fail(path + ": " + std::string(std::strerror(errno)));
+		}
+
+		return cpp::fail(path + " is not a valid bios image");
 	}
 	
 	// Fetch the 32 bit little endian word at ‘offset‘
