@@ -2,7 +2,7 @@ CXX := c++
 CC := gcc
 STRIP := strip
 #FLAGS := -std=c++14 -O2 -Wall -I ./include
-FLAGS := -std=c++14 -O0 -g -Wall -I ./include
+FLAGS := -std=c++14 -O0 -g -Wall -I ./include -I ../fmt/include
 LDFLAGS := -rdynamic -static-libstdc++ libfmt.a
 
 TARGET = cppstation.exe
@@ -16,7 +16,7 @@ all: $(TARGET)
 
 %_cpp.o: %.cpp
 	$(CXX) $(FLAGS) -c $< -o $@
-	
+
 %_c.o: %.c
 	$(CXX) $(FLAGS) -c $< -o $@
 
