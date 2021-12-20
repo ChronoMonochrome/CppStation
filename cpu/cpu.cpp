@@ -40,6 +40,9 @@ namespace cpu {
 		case 0b001111:
 			opLui(instruction);
 			break;
+		case 0b001101:
+			opOri(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
 		}
@@ -59,6 +62,16 @@ namespace cpu {
 
 		// Low 16bits are set to 0
 		uint32_t v = i << 16;
+		setReg(t, v);
+	}
+
+	void Cpu::opOri(Instruction &instruction)
+	{
+		uint32_t i = instruction.imm();
+		uint32_t t = instruction.t();
+		uint32_t s = instruction.s();
+
+		uint32_t v = reg(s) | i;
 		setReg(t, v);
 	}
 

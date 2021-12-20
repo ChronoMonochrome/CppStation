@@ -33,7 +33,11 @@ namespace cpu {
 		uint32_t load32(uint32_t addr);
 		uint32_t store32(uint32_t addr, uint32_t val);
 
+		// Load Upper Immediate
 		void opLui(Instruction &instruction);
+
+		// Bitwise Or Immediate
+		void opOri(Instruction &instruction);
 
 		~Cpu();
 		// The program counter register
