@@ -4,7 +4,8 @@
 namespace cpu {
 	Cpu::Cpu() :
 		mPc(0xbfc00000), // PC reset value at the beginning of the BIOS
-		mNextInstruction(0x0) // NOP
+		mNextInstruction(0x0), // NOP
+		mSr(0)
 	{
 		for (int i = 1; i < 32; i++)
 			mRegs[i] = 0xdeadc0de;
@@ -66,6 +67,9 @@ namespace cpu {
 		case 0b000010:
 			opJ(instruction);
 			break;
+		case 0b010000:
+			opCop0(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
 		}
@@ -113,6 +117,12 @@ namespace cpu {
 
 	void Cpu::opSw(Instruction &instruction)
 	{
+        if ((mSr & 0x10000) != 0) {
+			// Cache is isolated, ignore write
+			println("Ignoring store while cache is isolated");
+			return;
+		}
+
 		auto i = instruction.imm_se();
 		auto t = instruction.t();
 		auto s = instruction.s();
@@ -122,7 +132,6 @@ namespace cpu {
 		store32(addr, v);
 	}
 
-	// Shift Left Logical
 	void Cpu::opSll(Instruction &instruction)
 	{
 		auto i = instruction.shift();
@@ -134,7 +143,6 @@ namespace cpu {
 		setReg(d, v);
 	}
 
-	// Add Immediate Unsigned
 	void Cpu::opAddiu(Instruction &instruction)
 	{
 		auto i = instruction.imm_se();
@@ -146,15 +154,13 @@ namespace cpu {
 		setReg(t, v);
 	}
 
-	// Jump
 	void Cpu::opJ(Instruction &instruction)
 	{
 		auto i = instruction.imm_jump();
 		mPc = (mPc & 0xf0000000) | (i << 2);
 	}
 
-    // Bitwise Or
-    void Cpu::opOr(Instruction instruction)
+    void Cpu::opOr(Instruction &instruction)
 	{
         auto d = instruction.d();
         auto s = instruction.s();
@@ -164,6 +170,47 @@ namespace cpu {
 
         setReg(d, v);
     }
+
+	void Cpu::opCop0(Instruction &instruction)
+	{
+		switch (instruction.copOpcode()) {
+        case 0b00100:
+            opMtc0(instruction);
+            break;
+        default:
+            panic(fmt::format("unhandled cop0 instruction {}",
+                          instruction.mData));
+		}
+	}
+
+	void Cpu::opMtc0(Instruction &instruction)
+	{
+		auto cpu_r = instruction.t();
+		auto cop_r = instruction.d().val;
+
+		auto v = reg(cpu_r);
+
+		switch (cop_r) {
+		case 3:
+		case 5:
+		case 6:
+		case 7:
+		case 9:
+		case 11: // Breakpoints registers
+			if (v != 0)
+				panic(fmt::format("Unhandled write to cop0r{}", cop_r));
+			break;
+		case 12:
+			mSr = v;
+			break;
+		case 13: // Cause register
+			if (v != 0)
+				panic("Unhandled write to CAUSE register.");
+			break;
+		default:
+			panic(fmt::format("Unhandled cop0 register {}", cop_r));
+		}
+	}
 
 	Cpu::~Cpu()
 	{
@@ -183,6 +230,12 @@ namespace cpu {
 	uint32_t Instruction::subfunction()
 	{
 		return mData & 0x3f;
+	}
+
+	// Return coprocessor opcode in bits [25:21]
+	uint32_t Instruction::copOpcode()
+	{
+		return (mData >> 21) & 0x1f;
 	}
 
 	// Return register index in bits [20:16]

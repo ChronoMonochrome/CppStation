@@ -20,6 +20,9 @@ namespace cpu {
 		// Return bits [5:0] of the instruction
 		uint32_t subfunction();
 
+		// Return coprocessor opcode in bits [25:21]
+		uint32_t copOpcode();
+
 		// Return register index in bits [20:16]
 		registerIndex t();
 
@@ -75,7 +78,13 @@ namespace cpu {
 		void opJ(Instruction &instruction);
 
 		// Bitwise Or
-		void opOr(Instruction instruction);
+		void opOr(Instruction &instruction);
+
+		// Coprocessor 0 opcode
+		void opCop0(Instruction &instruction);
+
+		// Move To Coprocessor 0
+		void opMtc0(Instruction &instruction);
 
 		~Cpu();
 		// The program counter register
@@ -86,6 +95,8 @@ namespace cpu {
 		// General Purpose Registers.
 		// The first entry must always contain 0.
 		uint32_t mRegs[32];
+		// Cop0 register 12: Status Register
+		uint32_t mSr;
 
 		// Linkage to the communications bus
 		bus::Bus *mBus = nullptr;
