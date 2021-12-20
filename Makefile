@@ -14,7 +14,7 @@ OBJECTS = $(CPPSOURCES:.cpp=_cpp.o)
 
 all: $(TARGET)
 
-%_cpp.o: %.cpp
+%_cpp.o: %.cpp .FORCE
 	$(CXX) $(FLAGS) -c $< -o $@
 
 %_c.o: %.c
@@ -25,3 +25,5 @@ $(TARGET): $(OBJECTS)
 
 clean:
 	rm $(OBJECTS) $(TARGET)
+
+.FORCE:
