@@ -1,4 +1,5 @@
 #include <memory/map.hpp>
+#include "helpers.hpp"
 
 namespace map {
 	Range::Range(uint32_t base, uint32_t size) : mBase(base), mSize(size), mEnd(base + size)
@@ -20,7 +21,9 @@ namespace map {
 		mMEM_CONTROL(0x1f801000, 36),
 		// Register that has something to do with RAM configuration,
 		// configured by the BIOS
-		mRAM_SIZE(0x1f801060, 4)
+		mRAM_SIZE(0x1f801060, 4),
+		// Cache control register
+		mCACHE_CONTROL(0xfffe0130, 4)
 	{
 	}
 

@@ -19,5 +19,6 @@ namespace map {
 		Range mBIOS;
 		Range mMEM_CONTROL;
 		Range mRAM_SIZE;
+		Range mCACHE_CONTROL;
 	};
 }

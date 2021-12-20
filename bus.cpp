@@ -53,6 +53,12 @@ namespace bus {
 			return;
 		}
 
+		offset = mMap.mCACHE_CONTROL.contains(addr);
+		if (offset != -1) {
+			println("Unhandled write to CACHE_CONTROL register");
+			return;
+		}
+
 		panic(fmt::format("unhandled store32 into address {:08x}", addr));
 	}
 
