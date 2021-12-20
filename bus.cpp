@@ -6,6 +6,8 @@ namespace bus {
 	{
 		std::string path("roms/SCPH1001.BIN");
 		uint64_t res = mBios.loadFromFile(path).check();
+		(void)res;
+
 		mCpu.connectBus(this);
 		mBios.connectBus(this);
 	}
