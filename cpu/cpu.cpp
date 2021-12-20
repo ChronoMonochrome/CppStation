@@ -43,6 +43,9 @@ namespace cpu {
 		case 0b001101:
 			opOri(instruction);
 			break;
+		case 0b101011:
+			opSw(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
 		}
@@ -73,6 +76,17 @@ namespace cpu {
 
 		uint32_t v = reg(s) | i;
 		setReg(t, v);
+	}
+
+	void Cpu::opSw(Instruction &instruction)
+	{
+		uint32_t i = instruction.imm();
+		uint32_t t = instruction.t();
+		uint32_t s = instruction.s();
+
+		uint32_t addr = (uint32_t)(reg(s) + i);
+		uint32_t v = reg(t);
+		store32(addr, v);
 	}
 
 	Cpu::~Cpu()

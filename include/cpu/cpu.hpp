@@ -39,6 +39,9 @@ namespace cpu {
 		// Bitwise Or Immediate
 		void opOri(Instruction &instruction);
 
+		// Store Word
+		void opSw(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
