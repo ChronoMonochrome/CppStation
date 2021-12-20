@@ -28,3 +28,8 @@ static std::string string_format(const std::string& format, Args ... args)
     std::snprintf(buf.get(), size, format.c_str(), args ...);
     return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
 }
+
+void println(std::string msg)
+{
+	cout << msg << endl;
+}

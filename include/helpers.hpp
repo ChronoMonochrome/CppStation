@@ -10,3 +10,4 @@
 
 [[noreturn]] void panic(const char *error_msg);
 [[noreturn]] void panic(std::string error_msg);
+void println(std::string msg);
