@@ -86,6 +86,12 @@ namespace cpu {
 		// Move To Coprocessor 0
 		void opMtc0(Instruction &instruction);
 
+		// Branch to immediate value `offset`
+		void branch(uint32_t offset);
+
+		// Branch if Not Equal
+		void opBne(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

@@ -70,6 +70,9 @@ namespace cpu {
 		case 0b010000:
 			opCop0(instruction);
 			break;
+		case 0b000101:
+			opBne(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
 		}
@@ -77,22 +80,22 @@ namespace cpu {
 
 	void Cpu::runNextInstruction()
 	{
-        uint32_t pc = mPc;
+		uint32_t pc = mPc;
 
-        // Use previously loaded instruction
+		// Use previously loaded instruction
 		Instruction instruction(mNextInstruction);
 
-        // Fetch instruction at PC
-        mNextInstruction = Instruction(load32(pc));
+		// Fetch instruction at PC
+		mNextInstruction = Instruction(load32(pc));
 
-        // Increment PC to point to the next instruction. All
-        // instructions are 32bit long.
-        mPc = pc + 4;
+		// Increment PC to point to the next instruction. All
+		// instructions are 32bit long.
+		mPc = pc + 4;
 #ifdef DEBUG
 		cout << fmt::format("instruction: {:x}", instruction.mData) << endl;
 #endif
 
-        decodeAndExecute(instruction);
+		decodeAndExecute(instruction);
 	}
 
 	void Cpu::opLui(Instruction &instruction)
@@ -117,7 +120,7 @@ namespace cpu {
 
 	void Cpu::opSw(Instruction &instruction)
 	{
-        if ((mSr & 0x10000) != 0) {
+		if ((mSr & 0x10000) != 0) {
 			// Cache is isolated, ignore write
 			println("Ignoring store while cache is isolated");
 			return;
@@ -160,26 +163,26 @@ namespace cpu {
 		mPc = (mPc & 0xf0000000) | (i << 2);
 	}
 
-    void Cpu::opOr(Instruction &instruction)
+	void Cpu::opOr(Instruction &instruction)
 	{
-        auto d = instruction.d();
-        auto s = instruction.s();
-        auto t = instruction.t();
+		auto d = instruction.d();
+		auto s = instruction.s();
+		auto t = instruction.t();
 
-        auto v = reg(s) | reg(t);
+		auto v = reg(s) | reg(t);
 
-        setReg(d, v);
-    }
+		setReg(d, v);
+	}
 
 	void Cpu::opCop0(Instruction &instruction)
 	{
 		switch (instruction.copOpcode()) {
-        case 0b00100:
-            opMtc0(instruction);
-            break;
-        default:
-            panic(fmt::format("unhandled cop0 instruction {}",
-                          instruction.mData));
+		case 0b00100:
+			opMtc0(instruction);
+			break;
+		default:
+			panic(fmt::format("unhandled cop0 instruction {}",
+						  instruction.mData));
 		}
 	}
 
@@ -209,6 +212,33 @@ namespace cpu {
 			break;
 		default:
 			panic(fmt::format("Unhandled cop0 register {}", cop_r));
+		}
+	}
+
+	void Cpu::branch(uint32_t offset)
+	{
+		// Offset immediates are always shifted two places to the
+		// right since `PC` addresses have to be aligned on 32bits at
+		// all times.
+		offset = offset << 2;
+
+		mPc += offset;
+
+		// We need to compensate for the hardcoded
+		// `pc.wrapping_add(4)` in `run_next_instruction`
+		mPc -= 4;
+	}
+
+
+	void Cpu::opBne(Instruction &instruction)
+	{
+		auto i = instruction.imm_se();
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		if (reg(s) != reg(t))
+		{
+			branch(i);
 		}
 	}
 
