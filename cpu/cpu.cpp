@@ -16,12 +16,18 @@ namespace cpu {
 	Cpu::Cpu() :
 		mPc(0xbfc00000), // PC reset value at the beginning of the BIOS
 		mNextInstruction(0x0), // NOP
+		mLoadReg(0),
 		mSr(0)
 	{
+		mLoadRegIdx.val = 0;
 		for (int i = 1; i < 32; i++)
+		{
 			mRegs[i] = 0xdeadc0de;
+			mOutRegs[i] = mRegs[i];
+		}
 
 		mRegs[0] = 0;
+		mOutRegs[0] = 0;
 	}
 
 	uint32_t Cpu::reg(registerIndex index)
@@ -31,9 +37,9 @@ namespace cpu {
 
 	void Cpu::setReg(registerIndex index, uint32_t val)
 	{
-		mRegs[index.val] = val;
+		mOutRegs[index.val] = val;
 		// R0 is always set to 0
-		mRegs[0] = 0;
+		mOutRegs[0] = 0;
 	}
 
 	uint32_t Cpu::load32(uint32_t addr)
@@ -87,6 +93,9 @@ namespace cpu {
 		case 0b001000:
 			opAddi(instruction);
 			break;
+		case 0b100011:
+			opLw(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
 		}
@@ -109,7 +118,27 @@ namespace cpu {
 		cout << fmt::format("instruction: {:x}", instruction.mData) << endl;
 #endif
 
+		// Execute the pending load (if any, otherwise it will load
+		// $zero which is a NOP). `set_reg` works only on
+		// `out_regs` so this operation won't be visible by
+		// the next instruction.
+		registerIndex reg = mLoadRegIdx;
+		uint32_t val = mLoadReg;
+		setReg(reg, val);
+
+		// We reset the load to target register 0 for the next
+		// instruction
+		mLoadRegIdx.val = 0;
+		mLoadReg = 0;
+
 		decodeAndExecute(instruction);
+
+		// Copy the output registers as input for the
+		// next instruction
+		for (int i = 0; i < 32; i++)
+		{
+			mRegs[i] = mOutRegs[i];
+		}
 	}
 
 	void Cpu::opLui(Instruction &instruction)
@@ -268,6 +297,28 @@ namespace cpu {
 			panic("ADDI overflow");
 
 		setReg(t, v);
+	}
+
+	void Cpu::opLw(Instruction &instruction) {
+
+		if ((mSr & 0x10000) != 0)
+		{
+			// Cache is isolated, ignore write
+			println("Ignoring load while cache is isolated");
+			return;
+		}
+
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = reg(s) + i;
+
+		auto v = load32(addr);
+
+		// Put the load in the delay slot
+		mLoadRegIdx.val = t.val;
+		mLoadReg = v;
 	}
 
 	Cpu::~Cpu()

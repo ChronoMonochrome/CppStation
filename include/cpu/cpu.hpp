@@ -95,6 +95,9 @@ namespace cpu {
 		// Add Immediate and check for signed overflow
 		void opAddi(Instruction &instruction);
 
+		// Load Word
+		void opLw(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
@@ -104,6 +107,14 @@ namespace cpu {
 		// General Purpose Registers.
 		// The first entry must always contain 0.
 		uint32_t mRegs[32];
+		// 2nd set of registers used to emulate the load delay slot
+		// accurately. They contain the output of the current
+		// instruction.
+		uint32_t mOutRegs[32];
+		// Load initiated by the current instruction
+		registerIndex mLoadRegIdx;
+		uint32_t mLoadReg;
+
 		// Cop0 register 12: Status Register
 		uint32_t mSr;
 
