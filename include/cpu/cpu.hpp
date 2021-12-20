@@ -70,6 +70,9 @@ namespace cpu {
 		// Jump
 		void opJ(Instruction &instruction);
 
+		// Bitwise Or
+		void opOr(Instruction instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

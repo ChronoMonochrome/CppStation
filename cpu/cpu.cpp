@@ -44,6 +44,9 @@ namespace cpu {
 			case 0b000000:
 				opSll(instruction);
 				break;
+			case 0b100101:
+				opOr(instruction);
+				break;
 			default:
 				panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
 			}
@@ -149,6 +152,18 @@ namespace cpu {
 		uint32_t i = instruction.imm_jump();
 		mPc = (mPc & 0xf0000000) | (i << 2);
 	}
+
+    // Bitwise Or
+    void Cpu::opOr(Instruction instruction)
+	{
+        uint32_t d = instruction.d();
+        uint32_t s = instruction.s();
+        uint32_t t = instruction.t();
+
+        uint32_t v = reg(s) | reg(t);
+
+        setReg(d, v);
+    }
 
 	Cpu::~Cpu()
 	{
