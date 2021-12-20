@@ -31,6 +31,9 @@ namespace cpu {
 		// Return immediate value in bits [16:0] as a sign-extended 32bit value
 		uint32_t imm_se();
 
+		// Jump target stored in bits [25:0]
+		uint32_t imm_jump();
+
 		// Shift Immediate values are stored in bits [10:6]
 		uint32_t shift();
 
@@ -64,9 +67,15 @@ namespace cpu {
 		// Add Immediate Unsigned
 		void opAddiu(Instruction &instruction);
 
+		// Jump
+		void opJ(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
+		// Next instruction to be executed, used to simulate the branch
+		// delay slot
+		Instruction mNextInstruction;
 		// General Purpose Registers.
 		// The first entry must always contain 0.
 		uint32_t mRegs[32];

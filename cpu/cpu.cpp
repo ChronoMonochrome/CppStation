@@ -3,7 +3,8 @@
 
 namespace cpu {
 	Cpu::Cpu() :
-		mPc(0xbfc00000) // PC reset value at the beginning of the BIOS
+		mPc(0xbfc00000), // PC reset value at the beginning of the BIOS
+		mNextInstruction(0x0) // NOP
 	{
 		for (int i = 1; i < 32; i++)
 			mRegs[i] = 0xdeadc0de;
@@ -59,6 +60,9 @@ namespace cpu {
 		case 0b001001:
 			opAddiu(instruction);
 			break;
+		case 0b000010:
+			opJ(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
 		}
@@ -66,9 +70,22 @@ namespace cpu {
 
 	void Cpu::runNextInstruction()
 	{
-		Instruction instruction(load32(mPc));
-		mPc = (uint32_t)(mPc + 4);
-		decodeAndExecute(instruction);
+        uint32_t pc = mPc;
+
+        // Use previously loaded instruction
+		Instruction instruction(mNextInstruction);
+
+        // Fetch instruction at PC
+        mNextInstruction = Instruction(load32(pc));
+
+        // Increment PC to point to the next instruction. All
+        // instructions are 32bit long.
+        mPc = pc + 4;
+#ifdef DEBUG
+		cout << fmt::format("instruction: {:x}", instruction.mData) << endl;
+#endif
+
+        decodeAndExecute(instruction);
 	}
 
 	void Cpu::opLui(Instruction &instruction)
@@ -102,29 +119,36 @@ namespace cpu {
 		store32(addr, v);
 	}
 
-    // Shift Left Logical
-    void Cpu::opSll(Instruction &instruction)
+	// Shift Left Logical
+	void Cpu::opSll(Instruction &instruction)
 	{
-        uint32_t i = instruction.shift();
-        uint32_t t = instruction.t();
-        uint32_t d = instruction.d();
+		uint32_t i = instruction.shift();
+		uint32_t t = instruction.t();
+		uint32_t d = instruction.d();
 
-        uint32_t v = reg(t) << i;
+		uint32_t v = reg(t) << i;
 
-        setReg(d, v);
-    }
+		setReg(d, v);
+	}
 
-    // Add Immediate Unsigned
-    void Cpu::opAddiu(Instruction &instruction)
+	// Add Immediate Unsigned
+	void Cpu::opAddiu(Instruction &instruction)
 	{
-        uint32_t i = instruction.imm_se();
-        uint32_t t = instruction.t();
-        uint32_t s = instruction.s();
+		uint32_t i = instruction.imm_se();
+		uint32_t t = instruction.t();
+		uint32_t s = instruction.s();
 
-        uint32_t v = (uint32_t)(reg(s) + i);
+		uint32_t v = (uint32_t)(reg(s) + i);
 
-        setReg(t, v);
-    }
+		setReg(t, v);
+	}
+
+	// Jump
+	void Cpu::opJ(Instruction &instruction)
+	{
+		uint32_t i = instruction.imm_jump();
+		mPc = (mPc & 0xf0000000) | (i << 2);
+	}
 
 	Cpu::~Cpu()
 	{
@@ -175,6 +199,12 @@ namespace cpu {
 	{
 		int16_t tmp = mData & 0xffff;
 		return (uint32_t)tmp;
+	}
+
+	// Jump target stored in bits [25:0]
+	uint32_t Instruction::imm_jump()
+	{
+		return mData & 0x3ffffff;
 	}
 
 	// Shift Immediate values are stored in bits [10:6]
