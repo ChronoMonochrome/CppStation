@@ -1,10 +1,10 @@
 CXX := c++
 STRIP := strip
 FLAGS := -std=c++2a -O2 -Wall -I ./include
-LDFLAGS := -static-libstdc++
+LDFLAGS := -static-libstdc++ libfmt.a
 
 TARGET = cppstation.exe
-CSOURCES = $(shell echo memory/*.cpp *.cpp)
+CSOURCES = $(shell echo cpu/*.cpp memory/*.cpp *.cpp)
 
 OBJECTS = $(CSOURCES:.cpp=_cpp.o)
 

@@ -1,33 +1,44 @@
 #include <memory/bios.hpp>
+#include <bus.hpp>
+
+using namespace std;
 
 namespace bios {
 	const uint64_t BIOS_SIZE = 512 * 1024;
 
-	Bios::Bios(std::string &path)
+	Bios::Bios()
 	{
-		std::ifstream stream(path, std::ios::in | std::ios::binary);
-		std::vector<uint8_t> mBuffer((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-		if (mBuffer.size() == BIOS_SIZE)
-			mIsValidImage = true;
+	}
+	
+	void Bios::loadFromFile(std::string &path)
+	{
+		std::ifstream ifs;
+		ifs.open(path, std::ifstream::binary);
+		if (ifs.is_open())
+		{
+			ifs.seekg(0, std::ios_base::end);
+			uint64_t bufferSize = ifs.tellg();
+			if (bufferSize == BIOS_SIZE) {
+				mIsValidImage = true;
+				ifs.seekg(0, std::ios_base::beg);
+				mBuffer.resize(bufferSize);
+				ifs.read((char*)mBuffer.data(), mBuffer.size());
+			}
+		}
+		ifs.close();
+	}
+	
+	// Fetch the 32 bit little endian word at ‘offset‘
+	uint32_t Bios::load32(size_t offset)
+	{
+		uint8_t b0 = mBuffer[offset + 0];
+		uint8_t b1 = mBuffer[offset + 1];
+		uint8_t b2 = mBuffer[offset + 2];
+		uint8_t b3 = mBuffer[offset + 3];
+		return b0 | ( b1 << 8 ) | ( b2 << 16 ) | ( b3 << 24 );
 	}
 
 	Bios::~Bios()
 	{
-	}
-	
-	auto getBios() noexcept -> cpp::result<Bios*, std::string>
-	{
-		std::string path("roms/SCPH1001.BIN");
-
-		Bios* mybios = new Bios(path);
-		if (errno != 0) {
-			return cpp::fail(path + ": " + std::string(std::strerror(errno)));
-		}
-		
-		if (!mybios->mIsValidImage) {
-			return cpp::fail(path + " is not a valid bios image");
-		}
-		
-		return mybios;
 	}
 }

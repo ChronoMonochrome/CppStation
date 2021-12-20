@@ -1,8 +1,12 @@
-#ifndef _HELPERS_CPP
-#define _HELPERS_CPP
+#pragma once
+
+#include <iostream>
+#include <memory>
+#include <string>
+#include <stdexcept>
 
 #include "result.hpp"
+#include <fmt/core.h>
 
 [[noreturn]] void panic(const char *error_msg);
 [[noreturn]] void panic(std::string error_msg);
-#endif
