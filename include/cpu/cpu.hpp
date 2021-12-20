@@ -92,6 +92,9 @@ namespace cpu {
 		// Branch if Not Equal
 		void opBne(Instruction &instruction);
 
+		// Add Immediate and check for signed overflow
+		void opAddi(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

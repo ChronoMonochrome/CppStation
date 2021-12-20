@@ -1,5 +1,16 @@
 #include <cpu/cpu.hpp>
 #include <bus.hpp>
+#include <limits.h>
+
+inline static constexpr bool AddOverflow(uint32_t old_value, uint32_t add_value, uint32_t new_value)
+{
+	return (((new_value ^ old_value) & (new_value ^ add_value)) & UINT32_C(0x80000000)) != 0;
+}
+
+inline static constexpr bool SubOverflow(uint32_t old_value, uint32_t sub_value, uint32_t new_value)
+{
+	return (((new_value ^ old_value) & (old_value ^ sub_value)) & UINT32_C(0x80000000)) != 0;
+}
 
 namespace cpu {
 	Cpu::Cpu() :
@@ -72,6 +83,9 @@ namespace cpu {
 			break;
 		case 0b000101:
 			opBne(instruction);
+			break;
+		case 0b001000:
+			opAddi(instruction);
 			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
@@ -240,6 +254,20 @@ namespace cpu {
 		{
 			branch(i);
 		}
+	}
+
+	void Cpu::opAddi(Instruction &instruction)
+	{
+		uint32_t i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+		uint32_t s1 = reg(s);
+		uint32_t v = s1 + i;
+
+		if (AddOverflow(s1, i, v))
+			panic("ADDI overflow");
+
+		setReg(t, v);
 	}
 
 	Cpu::~Cpu()
