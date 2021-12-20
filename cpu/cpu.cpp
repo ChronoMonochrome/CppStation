@@ -12,14 +12,14 @@ namespace cpu {
 		mRegs[0] = 0;
 	}
 
-	uint32_t Cpu::reg(uint32_t index)
+	uint32_t Cpu::reg(registerIndex index)
 	{
-		return mRegs[index];
+		return mRegs[index.val];
 	}
 
-	void Cpu::setReg(uint32_t index, uint32_t val)
+	void Cpu::setReg(registerIndex index, uint32_t val)
 	{
-		mRegs[index] = val;
+		mRegs[index.val] = val;
 		// R0 is always set to 0
 		mRegs[0] = 0;
 	}
@@ -93,43 +93,43 @@ namespace cpu {
 
 	void Cpu::opLui(Instruction &instruction)
 	{
-		uint32_t i = instruction.imm();
-		uint32_t t = instruction.t();
+		auto i = instruction.imm();
+		auto t = instruction.t();
 
 		// Low 16bits are set to 0
-		uint32_t v = i << 16;
+		auto v = i << 16;
 		setReg(t, v);
 	}
 
 	void Cpu::opOri(Instruction &instruction)
 	{
-		uint32_t i = instruction.imm();
-		uint32_t t = instruction.t();
-		uint32_t s = instruction.s();
+		auto i = instruction.imm();
+		auto t = instruction.t();
+		auto s = instruction.s();
 
-		uint32_t v = reg(s) | i;
+		auto v = reg(s) | i;
 		setReg(t, v);
 	}
 
 	void Cpu::opSw(Instruction &instruction)
 	{
-		uint32_t i = instruction.imm_se();
-		uint32_t t = instruction.t();
-		uint32_t s = instruction.s();
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
 
-		uint32_t addr = (uint32_t)(reg(s) + i);
-		uint32_t v = reg(t);
+		uint32_t addr = reg(s) + i;
+		auto v = reg(t);
 		store32(addr, v);
 	}
 
 	// Shift Left Logical
 	void Cpu::opSll(Instruction &instruction)
 	{
-		uint32_t i = instruction.shift();
-		uint32_t t = instruction.t();
-		uint32_t d = instruction.d();
+		auto i = instruction.shift();
+		auto t = instruction.t();
+		auto d = instruction.d();
 
-		uint32_t v = reg(t) << i;
+		auto v = reg(t) << i;
 
 		setReg(d, v);
 	}
@@ -137,11 +137,11 @@ namespace cpu {
 	// Add Immediate Unsigned
 	void Cpu::opAddiu(Instruction &instruction)
 	{
-		uint32_t i = instruction.imm_se();
-		uint32_t t = instruction.t();
-		uint32_t s = instruction.s();
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
 
-		uint32_t v = (uint32_t)(reg(s) + i);
+		auto v = reg(s) + i;
 
 		setReg(t, v);
 	}
@@ -149,18 +149,18 @@ namespace cpu {
 	// Jump
 	void Cpu::opJ(Instruction &instruction)
 	{
-		uint32_t i = instruction.imm_jump();
+		auto i = instruction.imm_jump();
 		mPc = (mPc & 0xf0000000) | (i << 2);
 	}
 
     // Bitwise Or
     void Cpu::opOr(Instruction instruction)
 	{
-        uint32_t d = instruction.d();
-        uint32_t s = instruction.s();
-        uint32_t t = instruction.t();
+        auto d = instruction.d();
+        auto s = instruction.s();
+        auto t = instruction.t();
 
-        uint32_t v = reg(s) | reg(t);
+        auto v = reg(s) | reg(t);
 
         setReg(d, v);
     }
@@ -186,21 +186,27 @@ namespace cpu {
 	}
 
 	// Return register index in bits [20:16]
-	uint32_t Instruction::t()
+	registerIndex Instruction::t()
 	{
-		return (mData >> 16) & 0x1f;
+		registerIndex ret;
+		ret.val = (mData >> 16) & 0x1f;
+		return ret;
 	}
 
 	// Return register index in bits [25:21]
-	uint32_t Instruction::s()
+	registerIndex Instruction::s()
 	{
-		return (mData >> 21) & 0x1f;
+		registerIndex ret;
+		ret.val = (mData >> 21) & 0x1f;
+		return ret;
 	}
 
 	// Return register index in bits [15:11]
-	uint32_t Instruction::d()
+	registerIndex Instruction::d()
 	{
-		return (mData >> 11) & 0x1f;
+		registerIndex ret;
+		ret.val = (mData >> 11) & 0x1f;
+		return ret;
 	}
 
 	// Return immediate value in bits [16:0]

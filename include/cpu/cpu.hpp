@@ -7,6 +7,10 @@ namespace bus {
 }
 
 namespace cpu {
+	typedef struct {
+		uint32_t val;
+	} registerIndex;
+
 	class Instruction {
 	public:
 		Instruction(uint32_t data);
@@ -17,13 +21,13 @@ namespace cpu {
 		uint32_t subfunction();
 
 		// Return register index in bits [20:16]
-		uint32_t t();
+		registerIndex t();
 
 		// Return register index in bits [25:21]
-		uint32_t s();
+		registerIndex s();
 
 		// Return register index in bits [15:11]
-		uint32_t d();
+		registerIndex d();
 
 		// Return immediate value in bits [16:0]
 		uint32_t imm();
@@ -47,8 +51,8 @@ namespace cpu {
 
 		void decodeAndExecute(Instruction &instruction);
 		void runNextInstruction();
-		uint32_t reg(uint32_t index);
-		void setReg(uint32_t index, uint32_t val);
+		uint32_t reg(registerIndex index);
+		void setReg(registerIndex index, uint32_t val);
 		uint32_t load32(uint32_t addr);
 		void store32(uint32_t addr, uint32_t val);
 
