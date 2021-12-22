@@ -3,7 +3,7 @@ CC := gcc
 STRIP := strip
 #FLAGS := -std=c++14 -O2 -Wall -I ./include
 FLAGS := -std=c++14 -O0 -g -Wall -I ./include -I ../fmt/include
-LDFLAGS := -rdynamic -static-libstdc++ libfmt.a
+LDFLAGS := -rdynamic -static-libstdc++ fmt/build/libfmt.a
 
 TARGET = cppstation.exe
 CPPSOURCES = $(shell echo cpu/*.cpp memory/*.cpp *.cpp)
