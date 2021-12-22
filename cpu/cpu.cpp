@@ -68,6 +68,9 @@ namespace cpu {
 			case 0b101011:
 				opSltu(instruction);
 				break;
+			case 0b100001:
+				opAddu(instruction);
+				break;
 			default:
 				panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
 			}
@@ -331,6 +334,17 @@ namespace cpu {
 		auto t = instruction.t();
 
 		auto v = reg(s) < reg(t);
+
+		setReg(d, v);
+	}
+
+	void Cpu::opAddu(Instruction &instruction)
+	{
+		auto s = instruction.s();
+		auto t = instruction.t();
+		auto d = instruction.d();
+
+		auto v = reg(s) + reg(t);
 
 		setReg(d, v);
 	}

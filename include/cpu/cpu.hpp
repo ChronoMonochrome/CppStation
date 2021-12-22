@@ -101,6 +101,9 @@ namespace cpu {
 		// Set on Less Than Unsigned
 		void opSltu(Instruction &instruction);
 
+		// Add Unsigned
+		void opAddu(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
