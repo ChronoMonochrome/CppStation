@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory/ram.hpp>
 #include <memory/bios.hpp>
 #include <memory/map.hpp>
 #include <cpu/cpu.hpp>
@@ -16,6 +17,7 @@ namespace bus
 		void store32(uint32_t addr, uint32_t val);
 		~Bus();
 		map::Map mMap;
+		ram::Ram mRam;
 		bios::Bios mBios;
 		cpu::Cpu mCpu;
 	};

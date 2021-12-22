@@ -8,6 +8,7 @@ namespace bus {
 		uint64_t res = mBios.loadFromFile(path).check();
 		(void)res;
 
+		mRam.connectBus(this);
 		mCpu.connectBus(this);
 		mBios.connectBus(this);
 	}
@@ -17,7 +18,11 @@ namespace bus {
 		if ((addr % 4) != 0)
 			panic(fmt::format("Unaligned load32 address: {:08x}", addr));
 
-		int32_t offset = mMap.mBIOS.contains(addr);
+		int32_t offset = mMap.mRAM.contains(addr);
+		if (offset != -1)
+			return mRam.load32(offset);
+
+		offset = mMap.mBIOS.contains(addr);
 		if (offset != -1)
 			return mBios.load32(offset);
 
@@ -29,7 +34,13 @@ namespace bus {
 		if ((addr % 4) != 0)
 			panic(fmt::format("Unaligned store32 address: {:08x}", addr));
 
-		int32_t offset = mMap.mMEM_CONTROL.contains(addr);
+		int32_t offset = mMap.mRAM.contains(addr);
+		if (offset != -1) {
+			mRam.store32(offset, val);
+			return;
+		}
+
+		offset = mMap.mMEM_CONTROL.contains(addr);
 		if (offset != -1) {
 			switch (offset)
 			{

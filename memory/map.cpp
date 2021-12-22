@@ -16,14 +16,16 @@ namespace map {
 	}
 
 	Map::Map() :
-		mBIOS(0xbfc00000, 512 * 1024),
+		mBIOS(0xbfc00000, bios::BIOS_SIZE),
 		// Memory latency and expansion mapping
 		mMEM_CONTROL(0x1f801000, 36),
 		// Register that has something to do with RAM configuration,
 		// configured by the BIOS
 		mRAM_SIZE(0x1f801060, 4),
 		// Cache control register
-		mCACHE_CONTROL(0xfffe0130, 4)
+		mCACHE_CONTROL(0xfffe0130, 4),
+		// RAM
+		mRAM(0xa0000000, ram::RAM_SIZE)
 	{
 	}
 

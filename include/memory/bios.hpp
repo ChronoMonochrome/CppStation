@@ -6,6 +6,7 @@
 #include <vector>
 #include <cstring>
 #include <cstdint>
+#include <cstddef>
 #include <iostream>
 
 #include "helpers.hpp"
@@ -15,6 +16,7 @@ namespace bus {
 }
 
 namespace bios {
+	const uint64_t BIOS_SIZE = 512 * 1024;
 	class Bios
 	{
 	public:

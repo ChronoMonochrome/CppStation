@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory/bios.hpp>
+#include <memory/ram.hpp>
 #include <cstdint>
 
 namespace map {
@@ -20,5 +22,6 @@ namespace map {
 		Range mMEM_CONTROL;
 		Range mRAM_SIZE;
 		Range mCACHE_CONTROL;
+		Range mRAM;
 	};
 }

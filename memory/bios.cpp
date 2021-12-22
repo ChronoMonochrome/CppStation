@@ -4,8 +4,6 @@
 using namespace std;
 
 namespace bios {
-	const uint64_t BIOS_SIZE = 512 * 1024;
-
 	Bios::Bios()
 	{
 	}
