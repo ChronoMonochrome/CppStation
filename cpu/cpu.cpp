@@ -65,6 +65,9 @@ namespace cpu {
 			case 0b100101:
 				opOr(instruction);
 				break;
+			case 0b101011:
+				opSltu(instruction);
+				break;
 			default:
 				panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
 			}
@@ -115,7 +118,7 @@ namespace cpu {
 		// instructions are 32bit long.
 		mPc = pc + 4;
 #ifdef DEBUG
-		cout << fmt::format("instruction: {:x}", instruction.mData) << endl;
+		std::cout << fmt::format("instruction: {:x}", instruction.mData) << endl;
 #endif
 
 		// Execute the pending load (if any, otherwise it will load
@@ -319,6 +322,17 @@ namespace cpu {
 		// Put the load in the delay slot
 		mLoadRegIdx.val = t.val;
 		mLoadReg = v;
+	}
+
+	void Cpu::opSltu(Instruction &instruction)
+	{
+		auto d = instruction.d();
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		auto v = reg(s) < reg(t);
+
+		setReg(d, v);
 	}
 
 	Cpu::~Cpu()

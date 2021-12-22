@@ -98,6 +98,9 @@ namespace cpu {
 		// Load Word
 		void opLw(Instruction &instruction);
 
+		// Set on Less Than Unsigned
+		void opSltu(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
