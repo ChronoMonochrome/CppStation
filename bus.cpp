@@ -82,6 +82,14 @@ namespace bus {
 
 	void Bus::store16(uint32_t addr, uint16_t val)
 	{
+		uint32_t abs_addr = mMap.maskRegion(addr);
+		int32_t offset = mMap.mSPU.contains(abs_addr);
+		if (offset != -1)
+		{
+			println(fmt::format("Unhandled write to SPU register {:08x}: {:04x}",
+					 abs_addr, val));
+			return;
+		}
 		panic(fmt::format("unhandled store16 into address {:08x}", addr));
 	}
 

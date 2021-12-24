@@ -25,7 +25,8 @@ namespace map {
 		// Cache control register. Full address since it's in KSEG2
 		mCACHE_CONTROL(0xfffe0130, 4),
 		// RAM
-		mRAM(0x00000000, ram::RAM_SIZE)
+		mRAM(0x00000000, ram::RAM_SIZE),
+		mSPU(0x1f801c00, 640)
 	{
 	}
 
