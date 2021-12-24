@@ -128,6 +128,9 @@ namespace cpu {
 		// Store Halfword
 		void opSh(Instruction &instruction);
 
+		// Jump And Link
+		void opJal(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

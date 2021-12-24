@@ -136,6 +136,9 @@ namespace cpu {
 		case 0b101001:
 			opSh(instruction);
 			break;
+		case 0b000011:
+			opJal(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
 		}
@@ -393,6 +396,18 @@ namespace cpu {
 		uint16_t v = (uint16_t)reg(t);
 
 		store16(addr, v);
+	}
+
+	void Cpu::opJal(Instruction &instruction)
+	{
+		uint32_t ra = mPc;
+
+		// Store return address in $31 ($ra)
+		RegisterIndex regIdx(31);
+
+		setReg(regIdx, ra);
+
+		opJ(instruction);
 	}
 
 	Cpu::~Cpu()
