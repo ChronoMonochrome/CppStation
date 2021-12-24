@@ -52,6 +52,26 @@ namespace cpu {
 		mBus->store32(addr, val);
 	}
 
+	uint16_t Cpu::load16(uint32_t addr)
+	{
+		return mBus->load16(addr);
+	}
+
+	void Cpu::store16(uint32_t addr, uint16_t val)
+	{
+		mBus->store16(addr, val);
+	}
+
+	uint8_t Cpu::load8(uint32_t addr)
+	{
+		return mBus->load8(addr);
+	}
+
+	void Cpu::store8(uint32_t addr, uint8_t val)
+	{
+		mBus->store8(addr, val);
+	}
+
 	void Cpu::decodeAndExecute(Instruction &instruction)
 	{
 		switch (instruction.function())

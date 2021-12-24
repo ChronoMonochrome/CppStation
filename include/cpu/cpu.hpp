@@ -52,12 +52,25 @@ namespace cpu {
 	public:
 		Cpu();
 
+		// Decode `instruction`'s opcode and run the function
 		void decodeAndExecute(Instruction &instruction);
 		void runNextInstruction();
+		// Retrieve the value of a general purpose register
 		uint32_t reg(registerIndex index);
+		// Set the value of a general purpose register
 		void setReg(registerIndex index, uint32_t val);
+		// Load 32bit value from the bus
 		uint32_t load32(uint32_t addr);
+		// Store 32bit value into the memory
 		void store32(uint32_t addr, uint32_t val);
+		// Load 16bit value from the memory
+		uint16_t load16(uint32_t addr);
+		// Store 16bit value into the memory
+		void store16(uint32_t addr, uint16_t val);
+		// Load 8bit value from the memory
+		uint8_t load8(uint32_t addr);
+		// Store 8bit value into the memory
+		void store8(uint32_t addr, uint8_t val);
 
 		// Load Upper Immediate
 		void opLui(Instruction &instruction);

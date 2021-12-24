@@ -75,6 +75,26 @@ namespace bus {
 		panic(fmt::format("unhandled store32 into address {:08x}", abs_addr));
 	}
 
+	uint16_t Bus::load16(uint32_t addr)
+	{
+		panic(fmt::format("unhandled load16 at address {:08x}", addr));
+	}
+
+	void Bus::store16(uint32_t addr, uint16_t val)
+	{
+		panic(fmt::format("unhandled store16 into address {:08x}", addr));
+	}
+
+	uint8_t Bus::load8(uint32_t addr)
+	{
+		panic(fmt::format("unhandled load8 at address {:08x}", addr));
+	}
+
+	void Bus::store8(uint32_t addr, uint8_t val)
+	{
+		panic(fmt::format("unhandled store8 into address {:08x}: {:02x}", addr, val));
+	}
+
 	Bus::~Bus()
 	{
 	}
