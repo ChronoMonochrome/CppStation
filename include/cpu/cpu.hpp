@@ -117,6 +117,9 @@ namespace cpu {
 		// Add Unsigned
 		void opAddu(Instruction &instruction);
 
+		// Store Halfword
+		void opSh(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

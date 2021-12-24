@@ -59,6 +59,16 @@ namespace cpu {
 
 	void Cpu::store16(uint32_t addr, uint16_t val)
 	{
+		// Address must be 16bit aligned
+		if (addr % 2 != 0)
+			panic(fmt::format("Unaligned store16 address: {:08x}", addr));
+
+		if ((mSr & 0x10000) != 0) {
+			// Cache is isolated, ignore write
+			println("Ignoring store while cache is isolated");
+			return;
+		}
+
 		mBus->store16(addr, val);
 	}
 
@@ -121,6 +131,9 @@ namespace cpu {
 			break;
 		case 0b100011:
 			opLw(instruction);
+			break;
+		case 0b101001:
+			opSh(instruction);
 			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
@@ -367,6 +380,18 @@ namespace cpu {
 		auto v = reg(s) + reg(t);
 
 		setReg(d, v);
+	}
+
+	void Cpu::opSh(Instruction &instruction)
+	{
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = reg(s) + i;
+		uint16_t v = (uint16_t)reg(t);
+
+		store16(addr, v);
 	}
 
 	Cpu::~Cpu()
