@@ -27,7 +27,7 @@ namespace bus {
 		if (offset != -1)
 			return mBios.load32(offset);
 
-		panic(fmt::format("Unhandled read at {:x}", abs_addr));
+		panic(fmt::format("Unhandled read at {:08x}", abs_addr));
 	}
 
 	void Bus::store32(uint32_t addr, uint32_t val)

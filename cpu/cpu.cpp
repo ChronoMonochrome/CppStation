@@ -102,7 +102,7 @@ namespace cpu {
 				opAddu(instruction);
 				break;
 			default:
-				panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
+				panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
 			}
 			break;
 		case 0b001111:
@@ -136,7 +136,7 @@ namespace cpu {
 			opSh(instruction);
 			break;
 		default:
-			panic(fmt::format("Unhandled instruction {:x}", instruction.mData));
+			panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
 		}
 	}
 
@@ -154,7 +154,7 @@ namespace cpu {
 		// instructions are 32bit long.
 		mPc = pc + 4;
 #ifdef DEBUG
-		std::cout << fmt::format("instruction: {:x}", instruction.mData) << endl;
+		std::cout << fmt::format("instruction: {:08x}", instruction.mData) << endl;
 #endif
 
 		// Execute the pending load (if any, otherwise it will load
@@ -263,7 +263,7 @@ namespace cpu {
 			opMtc0(instruction);
 			break;
 		default:
-			panic(fmt::format("unhandled cop0 instruction {}",
+			panic(fmt::format("unhandled cop0 instruction {:08x}",
 						  instruction.mData));
 		}
 	}
