@@ -108,6 +108,9 @@ namespace cpu {
 			case 0b100001:
 				opAddu(instruction);
 				break;
+			case 0b001000:
+				opJr(instruction);
+				break;
 			default:
 				panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
 			}
@@ -443,6 +446,13 @@ namespace cpu {
 		auto v = reg(t);
 
 		store8(addr, v);
+	}
+
+	void Cpu::opJr(Instruction &instruction)
+	{
+		auto s = instruction.s();
+
+		mPc = reg(s);
 	}
 
 	Cpu::~Cpu()
