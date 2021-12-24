@@ -16,6 +16,7 @@ namespace cpu {
 	Cpu::Cpu() :
 		mPc(0xbfc00000), // PC reset value at the beginning of the BIOS
 		mNextInstruction(0x0), // NOP
+		mLoadRegIdx(0),
 		mLoadReg(0),
 		mSr(0)
 	{
@@ -30,12 +31,12 @@ namespace cpu {
 		mOutRegs[0] = 0;
 	}
 
-	uint32_t Cpu::reg(registerIndex index)
+	uint32_t Cpu::reg(RegisterIndex index)
 	{
 		return mRegs[index.val];
 	}
 
-	void Cpu::setReg(registerIndex index, uint32_t val)
+	void Cpu::setReg(RegisterIndex index, uint32_t val)
 	{
 		mOutRegs[index.val] = val;
 		// R0 is always set to 0
@@ -161,7 +162,7 @@ namespace cpu {
 		// $zero which is a NOP). `set_reg` works only on
 		// `out_regs` so this operation won't be visible by
 		// the next instruction.
-		registerIndex reg = mLoadRegIdx;
+		RegisterIndex reg = mLoadRegIdx;
 		uint32_t val = mLoadReg;
 		setReg(reg, val);
 
@@ -421,26 +422,23 @@ namespace cpu {
 	}
 
 	// Return register index in bits [20:16]
-	registerIndex Instruction::t()
+	RegisterIndex Instruction::t()
 	{
-		registerIndex ret;
-		ret.val = (mData >> 16) & 0x1f;
+		RegisterIndex ret((mData >> 16) & 0x1f);
 		return ret;
 	}
 
 	// Return register index in bits [25:21]
-	registerIndex Instruction::s()
+	RegisterIndex Instruction::s()
 	{
-		registerIndex ret;
-		ret.val = (mData >> 21) & 0x1f;
+		RegisterIndex ret((mData >> 21) & 0x1f);
 		return ret;
 	}
 
 	// Return register index in bits [15:11]
-	registerIndex Instruction::d()
+	RegisterIndex Instruction::d()
 	{
-		registerIndex ret;
-		ret.val = (mData >> 11) & 0x1f;
+		RegisterIndex ret((mData >> 11) & 0x1f);
 		return ret;
 	}
 

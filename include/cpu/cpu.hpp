@@ -7,9 +7,17 @@ namespace bus {
 }
 
 namespace cpu {
-	typedef struct {
+	class RegisterIndex
+	{
+	public:
+		RegisterIndex(uint32_t _val) : val(_val)
+		{
+		}
+		~RegisterIndex()
+		{
+		}
 		uint32_t val;
-	} registerIndex;
+	};
 
 	class Instruction {
 	public:
@@ -24,13 +32,13 @@ namespace cpu {
 		uint32_t copOpcode();
 
 		// Return register index in bits [20:16]
-		registerIndex t();
+		RegisterIndex t();
 
 		// Return register index in bits [25:21]
-		registerIndex s();
+		RegisterIndex s();
 
 		// Return register index in bits [15:11]
-		registerIndex d();
+		RegisterIndex d();
 
 		// Return immediate value in bits [16:0]
 		uint32_t imm();
@@ -56,9 +64,9 @@ namespace cpu {
 		void decodeAndExecute(Instruction &instruction);
 		void runNextInstruction();
 		// Retrieve the value of a general purpose register
-		uint32_t reg(registerIndex index);
+		uint32_t reg(RegisterIndex index);
 		// Set the value of a general purpose register
-		void setReg(registerIndex index, uint32_t val);
+		void setReg(RegisterIndex index, uint32_t val);
 		// Load 32bit value from the bus
 		uint32_t load32(uint32_t addr);
 		// Store 32bit value into the memory
@@ -134,7 +142,7 @@ namespace cpu {
 		// instruction.
 		uint32_t mOutRegs[32];
 		// Load initiated by the current instruction
-		registerIndex mLoadRegIdx;
+		RegisterIndex mLoadRegIdx;
 		uint32_t mLoadReg;
 
 		// Cop0 register 12: Status Register
