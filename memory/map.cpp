@@ -26,7 +26,8 @@ namespace map {
 		mCACHE_CONTROL(0xfffe0130, 4),
 		// RAM
 		mRAM(0x00000000, ram::RAM_SIZE),
-		mSPU(0x1f801c00, 640)
+		mSPU(0x1f801c00, 640),
+		mEXPANSION_2(0x1f802000, 66)
 	{
 	}
 

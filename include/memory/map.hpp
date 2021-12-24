@@ -38,5 +38,6 @@ namespace map {
 		Range mCACHE_CONTROL;
 		Range mRAM;
 		Range mSPU;
+		Range mEXPANSION_2;
 	};
 }

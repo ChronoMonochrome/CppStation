@@ -100,6 +100,14 @@ namespace bus {
 
 	void Bus::store8(uint32_t addr, uint8_t val)
 	{
+		uint32_t abs_addr = mMap.maskRegion(addr);
+		int32_t offset = mMap.mEXPANSION_2.contains(abs_addr);
+		if (offset != -1)
+		{
+			println(fmt::format("Unhandled write to expansion 2 register {:08x}: {:02x}", abs_addr, val));
+			return;
+		}
+
 		panic(fmt::format("unhandled store8 into address {:08x}: {:02x}", addr, val));
 	}
 
