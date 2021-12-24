@@ -131,6 +131,9 @@ namespace cpu {
 		// Jump And Link
 		void opJal(Instruction &instruction);
 
+		// Bitwise And Immediate
+		void opAndi(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

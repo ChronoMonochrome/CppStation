@@ -139,6 +139,9 @@ namespace cpu {
 		case 0b000011:
 			opJal(instruction);
 			break;
+		case 0b001100:
+			opAndi(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
 		}
@@ -408,6 +411,17 @@ namespace cpu {
 		setReg(regIdx, ra);
 
 		opJ(instruction);
+	}
+
+	void Cpu::opAndi(Instruction &instruction)
+	{
+		auto i = instruction.imm();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		auto v = reg(s) & i;
+
+		setReg(t, v);
 	}
 
 	Cpu::~Cpu()
