@@ -149,6 +149,8 @@ namespace cpu {
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
+		// Instruction count
+		uint32_t mIp;
 		// Next instruction to be executed, used to simulate the branch
 		// delay slot
 		Instruction mNextInstruction;

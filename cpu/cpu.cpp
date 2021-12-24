@@ -15,6 +15,7 @@ inline static constexpr bool SubOverflow(uint32_t old_value, uint32_t sub_value,
 namespace cpu {
 	Cpu::Cpu() :
 		mPc(0xbfc00000), // PC reset value at the beginning of the BIOS
+		mIp(0),
 		mNextInstruction(0x0), // NOP
 		mLoadRegIdx(0),
 		mLoadReg(0),
@@ -175,12 +176,12 @@ namespace cpu {
 		// Fetch instruction at PC
 		mNextInstruction = Instruction(load32(pc));
 
+#ifdef DEBUG
+		std::cout << fmt::format("{} instruction: {:08x} pc={:08x} next={:08x}", mIp, instruction.mData, mPc, mNextInstruction.mData) << std::endl;
+#endif
 		// Increment PC to point to the next instruction. All
 		// instructions are 32bit long.
 		mPc = pc + 4;
-#ifdef DEBUG
-		std::cout << fmt::format("instruction: {:08x}", instruction.mData) << endl;
-#endif
 
 		// Execute the pending load (if any, otherwise it will load
 		// $zero which is a NOP). `set_reg` works only on
@@ -203,6 +204,7 @@ namespace cpu {
 		{
 			mRegs[i] = mOutRegs[i];
 		}
+		mIp++;
 	}
 
 	void Cpu::opLui(Instruction &instruction)
