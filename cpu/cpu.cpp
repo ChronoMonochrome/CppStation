@@ -154,6 +154,9 @@ namespace cpu {
 		case 0b101000:
 			opSb(instruction);
 			break;
+		case 0b100000:
+			opLb(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
 		}
@@ -453,6 +456,23 @@ namespace cpu {
 		auto s = instruction.s();
 
 		mPc = reg(s);
+	}
+
+	void Cpu::opLb(Instruction &instruction)
+	{
+
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = reg(s) + i;
+
+		// Cast as i8 to force sign extension
+		int8_t v = (int8_t)load8(addr);
+
+		// Put the load in the delay slot
+		mLoadRegIdx.val = t.val;
+		mLoadReg = v;
 	}
 
 	Cpu::~Cpu()

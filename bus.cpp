@@ -95,6 +95,12 @@ namespace bus {
 
 	uint8_t Bus::load8(uint32_t addr)
 	{
+		uint32_t abs_addr = mMap.maskRegion(addr);
+		int32_t offset = mMap.mBIOS.contains(abs_addr);
+		if (offset != -1)
+		{
+			return mBios.load8(offset);
+		}
 		panic(fmt::format("unhandled load8 at address {:08x}", addr));
 	}
 

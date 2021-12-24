@@ -140,6 +140,9 @@ namespace cpu {
 		// Jump Register
 		void opJr(Instruction &instruction);
 
+		// Load Byte (signed)
+		void opLb(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

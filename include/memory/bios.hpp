@@ -23,6 +23,7 @@ namespace bios {
 		Bios();
 		auto loadFromFile(std::string &path) -> cpp::result<uint64_t, std::string>;
 		uint32_t load32(size_t offset);
+		uint8_t load8(size_t offset);
 		~Bios();
 		bool mIsValidImage = false;
 	public:

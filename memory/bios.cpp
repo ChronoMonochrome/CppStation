@@ -33,6 +33,12 @@ namespace bios {
 		return cpp::fail(path + " is not a valid bios image");
 	}
 
+	// Fetch byte at `offset`
+	uint8_t Bios::load8(size_t offset)
+	{
+		return mBuffer[offset];
+	}
+
 	// Fetch the 32 bit little endian word at ‘offset‘
 	uint32_t Bios::load32(size_t offset)
 	{
