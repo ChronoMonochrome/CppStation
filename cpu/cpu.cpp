@@ -80,6 +80,12 @@ namespace cpu {
 
 	void Cpu::store8(uint32_t addr, uint8_t val)
 	{
+		if ((mSr & 0x10000) != 0)
+		{
+			// Cache is isolated, ignore write
+			println("Ignoring store while cache is isolated");
+			return;
+		}
 		mBus->store8(addr, val);
 	}
 
@@ -141,6 +147,9 @@ namespace cpu {
 			break;
 		case 0b001100:
 			opAndi(instruction);
+			break;
+		case 0b101000:
+			opSb(instruction);
 			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
@@ -422,6 +431,18 @@ namespace cpu {
 		auto v = reg(s) & i;
 
 		setReg(t, v);
+	}
+
+	void Cpu::opSb(Instruction &instruction)
+	{
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = reg(s) + i;
+		auto v = reg(t);
+
+		store8(addr, v);
 	}
 
 	Cpu::~Cpu()

@@ -134,6 +134,9 @@ namespace cpu {
 		// Bitwise And Immediate
 		void opAndi(Instruction &instruction);
 
+		// Store Byte
+		void opSb(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
