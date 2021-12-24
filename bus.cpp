@@ -101,6 +101,14 @@ namespace bus {
 		{
 			return mBios.load8(offset);
 		}
+
+		offset = mMap.mEXPANSION_1.contains(abs_addr);
+		if (offset != -1)
+		{
+			// No expansion implemented
+			return 0xff;
+		}
+
 		panic(fmt::format("unhandled load8 at address {:08x}", addr));
 	}
 

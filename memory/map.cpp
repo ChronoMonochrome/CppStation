@@ -27,6 +27,9 @@ namespace map {
 		// RAM
 		mRAM(0x00000000, ram::RAM_SIZE),
 		mSPU(0x1f801c00, 640),
+		// Expansion region 1
+		mEXPANSION_1(0x1f000000, 512 * 1024),
+		// Expansion region 2
 		mEXPANSION_2(0x1f802000, 66)
 	{
 	}
