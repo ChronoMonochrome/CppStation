@@ -157,6 +157,9 @@ namespace cpu {
 		case 0b100000:
 			opLb(instruction);
 			break;
+		case 0b000100:
+			opBeq(instruction);
+			break;
 		default:
 			panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
 		}
@@ -473,6 +476,18 @@ namespace cpu {
 		// Put the load in the delay slot
 		mLoadRegIdx.val = t.val;
 		mLoadReg = v;
+	}
+
+	void Cpu::opBeq(Instruction &instruction)
+	{
+		auto i = instruction.imm_se();
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		if (reg(s) == reg(t))
+		{
+			branch(i);
+		}
 	}
 
 	Cpu::~Cpu()

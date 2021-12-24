@@ -143,6 +143,9 @@ namespace cpu {
 		// Load Byte (signed)
 		void opLb(Instruction &instruction);
 
+		// Branch if Equal
+		void opBeq(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
