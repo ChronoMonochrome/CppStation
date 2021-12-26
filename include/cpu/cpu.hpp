@@ -149,6 +149,9 @@ namespace cpu {
 		// Move From Coprocessor 0
 		void opMfc0(Instruction &instruction);
 
+		// Bitwise And
+		void opAnd(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
