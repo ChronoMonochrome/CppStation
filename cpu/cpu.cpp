@@ -286,6 +286,9 @@ namespace cpu {
 	void Cpu::opCop0(Instruction &instruction)
 	{
 		switch (instruction.copOpcode()) {
+		case 0b00000:
+			opMfc0(instruction);
+			break;
 		case 0b00100:
 			opMtc0(instruction);
 			break;
@@ -490,6 +493,28 @@ namespace cpu {
 		{
 			branch(i);
 		}
+	}
+
+	void Cpu::opMfc0(Instruction &instruction)
+	{
+		auto cpuR = instruction.t();
+		auto copR = instruction.d().val;
+		uint32_t v;
+
+		switch (copR)
+		{
+		case 12:
+			v = mSr;
+			break;
+		case 13: // Cause register
+			panic("Unhandled read from CAUSE register");
+			break;
+		default:
+			panic(fmt::format("Unhandled read from cop0r{}", copR));
+		}
+
+		mLoadRegIdx.val = cpuR.val;
+		mLoadReg = v;
 	}
 
 	Cpu::~Cpu()

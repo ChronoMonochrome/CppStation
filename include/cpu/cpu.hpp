@@ -146,6 +146,9 @@ namespace cpu {
 		// Branch if Equal
 		void opBeq(Instruction &instruction);
 
+		// Move From Coprocessor 0
+		void opMfc0(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
