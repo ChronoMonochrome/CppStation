@@ -155,6 +155,12 @@ namespace cpu {
 		// Add and check for signed overflow
 		void opAdd(Instruction &instruction);
 
+		// Branch if Greater Than Zero
+		void opBgtz(Instruction &instruction);
+
+		// Branch if Less than or Equal to Zero
+		void opBlez(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

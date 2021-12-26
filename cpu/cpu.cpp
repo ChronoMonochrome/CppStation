@@ -167,6 +167,12 @@ namespace cpu {
 		case 0b000100:
 			opBeq(instruction);
 			break;
+		case 0b000110:
+			opBlez(instruction);
+			break;
+		case 0b000111:
+			opBgtz(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -548,6 +554,28 @@ namespace cpu {
 			panic("ADD overflow");
 
 		setReg(d, v);
+	}
+
+	void Cpu::opBgtz(Instruction &instruction)
+	{
+		auto i = instruction.imm_se();
+		auto s = instruction.s();
+
+		int32_t v = reg(s);
+
+		if (v > 0)
+			branch(i);
+	}
+
+	void Cpu::opBlez(Instruction &instruction)
+	{
+		auto i = instruction.imm_se();
+		auto s = instruction.s();
+
+		int32_t v = reg(s);
+
+		if (v <= 0)
+			branch(i);
 	}
 
 	Cpu::~Cpu()
