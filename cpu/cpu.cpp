@@ -115,6 +115,9 @@ namespace cpu {
 			case 0b100100:
 				opAnd(instruction);
 				break;
+			case 0b100000:
+				opAdd(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -526,6 +529,23 @@ namespace cpu {
 		auto t = instruction.t();
 
 		auto v = reg(s) & reg(t);
+
+		setReg(d, v);
+	}
+
+	void Cpu::opAdd(Instruction &instruction)
+	{
+		auto s = instruction.s();
+		auto t = instruction.t();
+		auto d = instruction.d();
+
+		uint32_t i_s = reg(s);
+		uint32_t i_t = reg(t);
+
+		uint32_t v = i_s + i_t;
+
+		if (AddOverflow(i_s, i_t, v))
+			panic("ADD overflow");
 
 		setReg(d, v);
 	}

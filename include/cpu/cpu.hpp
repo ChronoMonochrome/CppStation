@@ -152,6 +152,9 @@ namespace cpu {
 		// Bitwise And
 		void opAnd(Instruction &instruction);
 
+		// Add and check for signed overflow
+		void opAdd(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
