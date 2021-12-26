@@ -167,6 +167,10 @@ namespace cpu {
 		// Jump And Link Register
 		void opJalr(Instruction &instruction);
 
+		// Various branch instructions: BGEZ, BLTZ, BGEZAL, BLTZAL.
+		// Bits 16 and 20 are used to figure out which one to use.
+		void opBxx(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

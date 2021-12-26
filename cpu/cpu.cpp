@@ -179,6 +179,9 @@ namespace cpu {
 		case 0b100100:
 			opLbu(instruction);
 			break;
+		case 0b000001:
+			opBxx(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -610,6 +613,38 @@ namespace cpu {
 		setReg(d, ra);
 
 		mPc = reg(s);
+	}
+
+	void Cpu::opBxx(Instruction &instruction)
+	{
+		auto i = instruction.imm_se();
+		auto s = instruction.s();
+
+		uint32_t instruction_val = instruction.mData;
+
+		bool is_bgez = (instruction_val >> 16) & 1;
+		bool is_link = ((instruction_val >> 17) & 0xf) == 8;
+
+		int32_t v = reg(s);
+
+		// Test "less than zero"
+		uint32_t test = (v < 0);
+
+		// If the test is "greater than or equal to zero" we need
+		// to negate the comparison above since
+		// ("a >= 0" <=> "!(a < 0)"). The xor takes care of that.
+		test = test ^ is_bgez;
+
+		if (is_link)
+		{
+			uint32_t ra = mPc;
+
+			// Store return address in R31
+			setReg(RegisterIndex(31), ra);
+		}
+
+		if (test != 0)
+			branch(i);
 	}
 
 	Cpu::~Cpu()
