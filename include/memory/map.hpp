@@ -40,5 +40,6 @@ namespace map {
 		Range mSPU;
 		Range mEXPANSION_1;
 		Range mEXPANSION_2;
+		Range mIRQ_CONTROL;
 	};
 }

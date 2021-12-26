@@ -72,6 +72,12 @@ namespace bus {
 			return;
 		}
 
+		offset = mMap.mIRQ_CONTROL.contains(abs_addr);
+		if (offset != -1) {
+			println("IRQ control: {:x} <- {:08x}", offset, val);
+			return;
+		}
+
 		panic("unhandled store32 into address {:08x}", abs_addr);
 	}
 

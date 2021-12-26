@@ -30,7 +30,9 @@ namespace map {
 		// Expansion region 1
 		mEXPANSION_1(0x1f000000, 512 * 1024),
 		// Expansion region 2
-		mEXPANSION_2(0x1f802000, 66)
+		mEXPANSION_2(0x1f802000, 66),
+		// Interrupt Control registers (status and mask)
+		mIRQ_CONTROL(0x1f801070, 8)
 	{
 	}
 
