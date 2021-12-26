@@ -161,6 +161,9 @@ namespace cpu {
 		// Branch if Less than or Equal to Zero
 		void opBlez(Instruction &instruction);
 
+		// Load Byte Unsigned
+		void opLbu(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

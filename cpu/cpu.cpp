@@ -173,6 +173,9 @@ namespace cpu {
 		case 0b000111:
 			opBgtz(instruction);
 			break;
+		case 0b100100:
+			opLbu(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -576,6 +579,21 @@ namespace cpu {
 
 		if (v <= 0)
 			branch(i);
+	}
+
+	void Cpu::opLbu(Instruction &instruction) {
+
+		auto i = instruction.imm_se();
+		auto t = instruction.t();
+		auto s = instruction.s();
+
+		uint32_t addr = reg(s) + i;
+
+		auto v = load8(addr);
+
+		// Put the load in the delay slot
+		mLoadRegIdx.val = t.val;
+		mLoadReg = v;
 	}
 
 	Cpu::~Cpu()
