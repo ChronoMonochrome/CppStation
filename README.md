@@ -12,8 +12,9 @@ Project is at a very early stage of the development, not all CPU opcodes are imp
 
 # Build
 
-For the moment only Linux is supported. Project uses a bit of platform dependent code to ease the debugging process on Linux.                    
-Support for other platforms like Windows shouldn't be too difficult to do, with a removal or rewriting that debugging code in the future.           
+For the moment only Linux (x86-64) is supported. Project uses a bit of platform dependent code to ease the debugging process on Linux.                    
+Support for other OS like Windows shouldn't be too difficult to do, with a removal or rewriting that debugging code in the future.   
+
 To build the project, one dependency, [fmtlib](https://github.com/fmtlib/fmt/tree/c5aafd8f9003c5f0ac1d9bc00d566fefe60996d7) needs to be built as a static library first:
 ```
 cd fmt
