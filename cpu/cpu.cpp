@@ -63,7 +63,7 @@ namespace cpu {
 	{
 		// Address must be 16bit aligned
 		if (addr % 2 != 0)
-			panic(fmt::format("Unaligned store16 address: {:08x}", addr));
+			panic("Unaligned store16 address: {:08x}", addr);
 
 		if ((mSr & 0x10000) != 0) {
 			// Cache is isolated, ignore write
@@ -113,7 +113,7 @@ namespace cpu {
 				opJr(instruction);
 				break;
 			default:
-				panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
+				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
 			break;
 		case 0b001111:
@@ -162,7 +162,7 @@ namespace cpu {
 			opBeq(instruction);
 			break;
 		default:
-			panic(fmt::format("Unhandled instruction {:08x}", instruction.mData));
+			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
 	}
 
@@ -177,7 +177,7 @@ namespace cpu {
 		mNextInstruction = Instruction(load32(pc));
 
 #ifdef DEBUG
-		std::cout << fmt::format("{} instruction: {:08x} pc={:08x} next={:08x}", mIp, instruction.mData, mPc, mNextInstruction.mData) << std::endl;
+		println("{} instruction: {:08x} pc={:08x} next={:08x}", mIp, instruction.mData, mPc, mNextInstruction.mData);
 #endif
 		// Increment PC to point to the next instruction. All
 		// instructions are 32bit long.
@@ -293,8 +293,7 @@ namespace cpu {
 			opMtc0(instruction);
 			break;
 		default:
-			panic(fmt::format("unhandled cop0 instruction {:08x}",
-						  instruction.mData));
+			panic("unhandled cop0 instruction {:08x}", instruction.mData);
 		}
 	}
 
@@ -313,7 +312,7 @@ namespace cpu {
 		case 9:
 		case 11: // Breakpoints registers
 			if (v != 0)
-				panic(fmt::format("Unhandled write to cop0r{}", cop_r));
+				panic("Unhandled write to cop0r{}", cop_r);
 			break;
 		case 12:
 			mSr = v;
@@ -323,7 +322,7 @@ namespace cpu {
 				panic("Unhandled write to CAUSE register.");
 			break;
 		default:
-			panic(fmt::format("Unhandled cop0 register {}", cop_r));
+			panic("Unhandled cop0 register {}", cop_r);
 		}
 	}
 
@@ -510,7 +509,7 @@ namespace cpu {
 			panic("Unhandled read from CAUSE register");
 			break;
 		default:
-			panic(fmt::format("Unhandled read from cop0r{}", copR));
+			panic("Unhandled read from cop0r{}", copR);
 		}
 
 		mLoadRegIdx.val = cpuR.val;

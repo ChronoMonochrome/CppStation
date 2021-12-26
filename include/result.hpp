@@ -4802,8 +4802,6 @@ auto RESULT_NS_IMPL::result<T, E>::unwrap()
   return static_cast<T&&>(**this);
 }
 
-[[noreturn]] void panic(const char *error_msg);
-[[noreturn]] void panic(std::string error_msg);
 ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////
 template <typename T, typename E>
@@ -4812,9 +4810,12 @@ auto RESULT_NS_IMPL::result<T, E>::check(const char *error_msg)
   const& -> typename std::remove_reference<T>::type
 {
   if (m_storage.storage.m_has_value)
-	return m_storage.storage.m_value;
-  else
-	panic(error_msg);
+  {
+    return m_storage.storage.m_value;
+  } else {
+    std::cerr << error_msg << std::endl;
+    exit(-1);
+  }
 }
 ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////
@@ -4824,9 +4825,12 @@ auto RESULT_NS_IMPL::result<T, E>::check()
   const& -> typename std::remove_reference<T>::type
 {
   if (m_storage.storage.m_has_value)
-	return m_storage.storage.m_value;
-  else
-	panic(m_storage.storage.m_error);
+  {
+    return m_storage.storage.m_value;
+  } else {
+    std::cerr << m_storage.storage.m_error << std::endl;
+    exit(-1);
+  }
 }
 ///////////////////////////////////////////////////
 
