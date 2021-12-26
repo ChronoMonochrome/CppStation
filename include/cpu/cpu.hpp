@@ -171,6 +171,9 @@ namespace cpu {
 		// Bits 16 and 20 are used to figure out which one to use.
 		void opBxx(Instruction &instruction);
 
+		// Set if Less Than Immediate (signed)
+		void opSlti(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
