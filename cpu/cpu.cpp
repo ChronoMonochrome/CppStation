@@ -118,6 +118,9 @@ namespace cpu {
 			case 0b100000:
 				opAdd(instruction);
 				break;
+			case 0b001001:
+				opJalr(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -594,6 +597,19 @@ namespace cpu {
 		// Put the load in the delay slot
 		mLoadRegIdx.val = t.val;
 		mLoadReg = v;
+	}
+
+	void Cpu::opJalr(Instruction &instruction)
+	{
+		auto d = instruction.d();
+		auto s = instruction.s();
+
+		uint32_t ra = mPc;
+
+		// Store return address in `d`
+		setReg(d, ra);
+
+		mPc = reg(s);
 	}
 
 	Cpu::~Cpu()

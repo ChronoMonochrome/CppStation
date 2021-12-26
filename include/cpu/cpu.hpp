@@ -164,6 +164,9 @@ namespace cpu {
 		// Load Byte Unsigned
 		void opLbu(Instruction &instruction);
 
+		// Jump And Link Register
+		void opJalr(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
