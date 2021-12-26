@@ -33,4 +33,16 @@ namespace ram {
         mData[offset + 2] = b2;
         mData[offset + 3] = b3;
 	}
+
+	// Fetch the byte at `offset`
+	uint8_t Ram::load8(size_t offset)
+	{
+		return mData[offset];
+	}
+
+	// Store the byte `val` into `offset`
+	void Ram::store8(size_t offset, uint8_t val)
+	{
+		mData[offset] = val;
+	}
 }

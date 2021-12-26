@@ -96,7 +96,12 @@ namespace bus {
 	uint8_t Bus::load8(uint32_t addr)
 	{
 		uint32_t abs_addr = mMap.maskRegion(addr);
-		int32_t offset = mMap.mBIOS.contains(abs_addr);
+		int32_t offset = mMap.mRAM.contains(abs_addr);
+		if (offset != -1)
+		{
+			return mRam.load8(offset);
+		}
+		offset = mMap.mBIOS.contains(abs_addr);
 		if (offset != -1)
 		{
 			return mBios.load8(offset);
@@ -115,7 +120,13 @@ namespace bus {
 	void Bus::store8(uint32_t addr, uint8_t val)
 	{
 		uint32_t abs_addr = mMap.maskRegion(addr);
-		int32_t offset = mMap.mEXPANSION_2.contains(abs_addr);
+		int32_t offset = mMap.mRAM.contains(abs_addr);
+		if (offset != -1)
+		{
+			mRam.store8(offset, val);
+			return;
+		}
+		offset = mMap.mEXPANSION_2.contains(abs_addr);
 		if (offset != -1)
 		{
 			println(fmt::format("Unhandled write to expansion 2 register {:08x}: {:02x}", abs_addr, val));

@@ -18,6 +18,10 @@ namespace ram {
 		uint32_t load32(size_t offset);
 		// Store the 32bit little endian word `val` into `offset`
 		void store32(size_t offset, uint32_t val);
+		// Fetch the byte at `offset`
+		uint8_t load8(size_t offset);
+		// Store the byte `val` into `offset`
+		void store8(size_t offset, uint8_t val);
 		// Linkage to the communications bus
 		bus::Bus *mBus = nullptr;
 		// Link RAM to a communications bus
