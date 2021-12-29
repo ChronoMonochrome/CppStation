@@ -180,6 +180,9 @@ namespace cpu {
 		// Shift Right Arithmetic
 		void opSra(Instruction &instruction);
 
+		// Divide (signed)
+		void opDiv(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
@@ -201,6 +204,11 @@ namespace cpu {
 
 		// Cop0 register 12: Status Register
 		uint32_t mSr;
+
+		// HI register for division remainder and multiplication high result
+		uint32_t mHi;
+		// LO register for division quotient and multiplication low result
+		uint32_t mLo;
 
 		// Linkage to the communications bus
 		bus::Bus *mBus = nullptr;

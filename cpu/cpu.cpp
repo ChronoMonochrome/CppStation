@@ -19,7 +19,9 @@ namespace cpu {
 		mNextInstruction(0x0), // NOP
 		mLoadRegIdx(0),
 		mLoadReg(0),
-		mSr(0)
+		mSr(0),
+		mHi(0xdeadc0de),
+		mLo(0xdeadc0de)
 	{
 		mLoadRegIdx.val = 0;
 		for (int i = 1; i < 32; i++)
@@ -126,6 +128,9 @@ namespace cpu {
 				break;
 			case 0b000011:
 				opSra(instruction);
+				break;
+			case 0b011010:
+				opDiv(instruction);
 				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
@@ -687,6 +692,34 @@ namespace cpu {
 		uint32_t v = ((int32_t)reg(t)) >> i;
 
 		setReg(d, v);
+	}
+
+	void Cpu::opDiv(Instruction &instruction)
+	{
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		int32_t n = reg(s);
+		int32_t d = reg(t);
+
+		if (d == 0)
+		{
+			// Division by zero, results are bogus
+			mHi = (uint32_t)n;
+
+			if (n >= 0)
+				mLo = 0xffffffff;
+			else
+				mLo = 1;
+		} else if ((uint32_t)n == 0x80000000 && d == -1) {
+			// Result is not representable in a 32bit
+			// signed integer
+			mHi = 0;
+			mLo = 0x80000000;
+		} else {
+			mHi = (uint32_t)(n % d);
+			mLo = (uint32_t)(n / d);
+		}
 	}
 
 	Cpu::~Cpu()
