@@ -124,6 +124,9 @@ namespace cpu {
 			case 0b100011:
 				opSubu(instruction);
 				break;
+			case 0b000011:
+				opSra(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -671,6 +674,17 @@ namespace cpu {
 		auto d = instruction.d();
 
 		auto v = reg(s) - reg(t);
+
+		setReg(d, v);
+	}
+
+	void Cpu::opSra(Instruction &instruction)
+	{
+		auto i = instruction.shift();
+		auto t = instruction.t();
+		auto d = instruction.d();
+
+		uint32_t v = ((int32_t)reg(t)) >> i;
 
 		setReg(d, v);
 	}

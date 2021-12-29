@@ -177,6 +177,9 @@ namespace cpu {
 		// Substract Unsigned
 		void opSubu(Instruction &instruction);
 
+		// Shift Right Arithmetic
+		void opSra(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
