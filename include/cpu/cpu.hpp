@@ -19,6 +19,13 @@ namespace cpu {
 		uint32_t val;
 	};
 
+	namespace exception {
+		enum Exception
+		{
+			SysCall = 0x8
+		};
+	}
+
 	class Instruction {
 	public:
 		Instruction(uint32_t data);
@@ -63,6 +70,11 @@ namespace cpu {
 		// Decode `instruction`'s opcode and run the function
 		void decodeAndExecute(Instruction &instruction);
 		void runNextInstruction();
+		// Trigger an exception
+		void exception(enum exception::Exception cause);
+
+		// System Call
+		void opSyscall(Instruction &instruction);
 		// Retrieve the value of a general purpose register
 		uint32_t reg(RegisterIndex index);
 		// Set the value of a general purpose register

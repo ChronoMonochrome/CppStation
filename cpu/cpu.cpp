@@ -150,6 +150,9 @@ namespace cpu {
 			case 0b101010:
 				opSlt(instruction);
 				break;
+			case 0b001100:
+				opSyscall(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -263,6 +266,44 @@ namespace cpu {
 			mRegs[i] = mOutRegs[i];
 		}
 		mIp++;
+	}
+
+	void Cpu::exception(enum exception::Exception cause)
+	{
+		uint32_t handler;
+		// Exception handler address depends on the `BEV` bit:
+		if ((mSr & (1 << 22)) != 0)
+			handler = 0xbfc00180;
+		else
+			handler = 0x80000080;
+
+		// Shift bits [5:0] of `SR` two places to the left. Those bits
+		// are three pairs of Interrupt Enable/User Mode bits behaving
+		// like a stack 3 entries deep. Entering an exception pushes a
+		// pair of zeroes by left shifting the stack which disables
+		// interrupts and puts the CPU in kernel mode. The original
+		// third entry is discarded (it's up to the kernel to handle
+		// more than two recursive exception levels).
+		auto mode = mSr & 0x3f;
+		mSr &= !0x3f;
+		mSr |= (mode << 2) & 0x3f;
+
+		// Update `CAUSE` register with the exception code (bits
+		// [6:2])
+		mCause = ((uint32_t)cause) << 2;
+
+		// Save current instruction address in `EPC`
+		mEpc = mCurrentPc;
+
+		// Exceptions don't have a branch delay, we jump directly into
+		// the handler
+		mPc	    = handler;
+		mNextPc = mPc + 4;
+	}
+
+	void Cpu::opSyscall(Instruction &instruction)
+	{
+		exception(exception::SysCall);
 	}
 
 	void Cpu::opLui(Instruction &instruction)
@@ -559,8 +600,11 @@ namespace cpu {
 		case 12:
 			v = mSr;
 			break;
-		case 13: // Cause register
-			panic("Unhandled read from CAUSE register");
+		case 13:
+			v = mCause;
+			break;
+		case 14:
+			v = mEpc;
 			break;
 		default:
 			panic("Unhandled read from cop0r{}", copR);
