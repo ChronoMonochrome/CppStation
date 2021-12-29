@@ -183,6 +183,9 @@ namespace cpu {
 		// Divide (signed)
 		void opDiv(Instruction &instruction);
 
+		// Move From LO
+		void opMflo(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

@@ -132,6 +132,9 @@ namespace cpu {
 			case 0b011010:
 				opDiv(instruction);
 				break;
+			case 0b010010:
+				opMflo(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -720,6 +723,13 @@ namespace cpu {
 			mHi = (uint32_t)(n % d);
 			mLo = (uint32_t)(n / d);
 		}
+	}
+
+	void Cpu::opMflo(Instruction &instruction)
+	{
+		auto d = instruction.d();
+
+		setReg(d, mLo);
 	}
 
 	Cpu::~Cpu()
