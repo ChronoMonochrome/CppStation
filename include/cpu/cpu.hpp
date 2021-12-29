@@ -189,6 +189,9 @@ namespace cpu {
 		// Shift Right Logical
 		void opSrl(Instruction &instruction);
 
+		// Set if Less Than Immediate Unsigned
+		void opSltiu(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
