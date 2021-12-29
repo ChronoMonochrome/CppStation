@@ -174,6 +174,9 @@ namespace cpu {
 		// Set if Less Than Immediate (signed)
 		void opSlti(Instruction &instruction);
 
+		// Substract Unsigned
+		void opSubu(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
