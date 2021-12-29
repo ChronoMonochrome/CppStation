@@ -135,6 +135,9 @@ namespace cpu {
 			case 0b010010:
 				opMflo(instruction);
 				break;
+			case 0b000010:
+				opSrl(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -730,6 +733,17 @@ namespace cpu {
 		auto d = instruction.d();
 
 		setReg(d, mLo);
+	}
+
+	void Cpu::opSrl(Instruction &instruction)
+	{
+		auto i = instruction.shift();
+		auto t = instruction.t();
+		auto d = instruction.d();
+
+		auto v = reg(t) >> i;
+
+		setReg(d, v);
 	}
 
 	Cpu::~Cpu()

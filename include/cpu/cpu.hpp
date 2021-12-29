@@ -186,6 +186,9 @@ namespace cpu {
 		// Move From LO
 		void opMflo(Instruction &instruction);
 
+		// Shift Right Logical
+		void opSrl(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
