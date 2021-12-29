@@ -219,6 +219,9 @@ namespace cpu {
 		// Move to HI
 		void opMthi(Instruction &instruction);
 
+		// Return From Exception
+		void opRfe(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

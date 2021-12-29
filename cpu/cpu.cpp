@@ -397,6 +397,9 @@ namespace cpu {
 		case 0b00100:
 			opMtc0(instruction);
 			break;
+		case 0b10000:
+			opRfe(instruction);
+			break;
 		default:
 			panic("unhandled cop0 instruction {:08x}", instruction.mData);
 		}
@@ -873,6 +876,22 @@ namespace cpu {
 		auto s = instruction.s();
 
 		mHi = reg(s);
+	}
+
+	void Cpu::opRfe(Instruction &instruction)
+	{
+		// There are other instructions with the same encoding but all
+		// are virtual memory related and the Playstation doesn't
+		// implement them. Still, let's make sure we're not running
+		// buggy code.
+		if ((instruction.mData & 0x3f) != 0b010000)
+			panic("Invalid cop0 instruction: {}", instruction.mData);
+
+		// Restore the pre-exception mode by shifting the Interrupt
+		// Enable/User Mode stack back to its original position.
+		auto mode = mSr & 0x3f;
+		mSr &= !0x3f;
+		mSr |= mode >> 2;
 	}
 
 	Cpu::~Cpu()
