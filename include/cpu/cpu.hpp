@@ -198,6 +198,9 @@ namespace cpu {
 		// Move From HI
 		void opMfhi(Instruction &instruction);
 
+		// Set on Less Than (signed)
+		void opSlt(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
