@@ -141,6 +141,9 @@ namespace cpu {
 			case 0b011011:
 				opDivu(instruction);
 				break;
+			case 0b010000:
+				opMfhi(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -781,6 +784,13 @@ namespace cpu {
 			mHi = n % d;
 			mLo = n / d;
 		}
+	}
+
+	void Cpu::opMfhi(Instruction &instruction)
+	{
+		auto d = instruction.d();
+
+		setReg(d, mHi);
 	}
 
 	Cpu::~Cpu()

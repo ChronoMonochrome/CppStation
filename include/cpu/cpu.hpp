@@ -195,6 +195,9 @@ namespace cpu {
 		// Divide Unsigned
 		void opDivu(Instruction &instruction);
 
+		// Move From HI
+		void opMfhi(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;
