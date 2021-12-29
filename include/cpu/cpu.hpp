@@ -192,6 +192,9 @@ namespace cpu {
 		// Set if Less Than Immediate Unsigned
 		void opSltiu(Instruction &instruction);
 
+		// Divide Unsigned
+		void opDivu(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

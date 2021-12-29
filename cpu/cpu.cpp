@@ -138,6 +138,9 @@ namespace cpu {
 			case 0b000010:
 				opSrl(instruction);
 				break;
+			case 0b011011:
+				opDivu(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -758,6 +761,26 @@ namespace cpu {
 		auto v = reg(s) < i;
 
 		setReg(t, v);
+	}
+
+	// Divide Unsigned
+	void Cpu::opDivu(Instruction &instruction)
+	{
+		auto s = instruction.s();
+		auto t = instruction.t();
+
+		auto n = reg(s);
+		auto d = reg(t);
+
+		if (d == 0)
+		{
+			// Division by zero, results are bogus
+			mHi = n;
+			mLo = 0xffffffff;
+		} else {
+			mHi = n % d;
+			mLo = n / d;
+		}
 	}
 
 	Cpu::~Cpu()
