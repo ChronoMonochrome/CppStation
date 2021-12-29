@@ -153,6 +153,12 @@ namespace cpu {
 			case 0b001100:
 				opSyscall(instruction);
 				break;
+			case 0b010001:
+				opMthi(instruction);
+				break;
+			case 0b010011:
+				opMtlo(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -853,6 +859,20 @@ namespace cpu {
 		auto v = s_i < t_i;
 
 		setReg(d, v);
+	}
+
+	void Cpu::opMtlo(Instruction &instruction)
+	{
+		auto s = instruction.s();
+
+		mLo = reg(s);
+	}
+
+	void Cpu::opMthi(Instruction &instruction)
+	{
+		auto s = instruction.s();
+
+		mHi = reg(s);
 	}
 
 	Cpu::~Cpu()
