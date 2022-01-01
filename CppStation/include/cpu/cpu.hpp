@@ -261,6 +261,9 @@ namespace cpu {
 		// Multiply (signed)
 		void opMult(Instruction &instruction);
 
+		// Substract and check for signed overflow
+		void opSub(Instruction &instruction);
+
 		~Cpu();
 		// The program counter register
 		uint32_t mPc;

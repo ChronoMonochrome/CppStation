@@ -181,6 +181,9 @@ namespace cpu {
 			case 0b011000:
 				opMult(instruction);
 				break;
+			case 0b100010:
+				opSub(instruction);
+				break;
 			default:
 				panic("Unhandled instruction {:08x}", instruction.mData);
 			}
@@ -1089,6 +1092,23 @@ namespace cpu {
 
 		mHi = (uint32_t)(v >> 32);
 		mLo = (uint32_t)v;
+	}
+
+	void Cpu::opSub(Instruction &instruction)
+	{
+		auto s = instruction.s();
+		auto t = instruction.t();
+		auto d = instruction.d();
+
+		uint32_t s_i = reg(s);
+		uint32_t t_i = reg(t);
+
+		uint32_t v = s_i - t_i;
+
+		if (SubOverflow(s_i, t_i, v))
+			exception(exception::Overflow);
+		else
+			setReg(d, v);
 	}
 
 	Cpu::~Cpu()
