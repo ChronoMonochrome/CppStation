@@ -1,4 +1,3 @@
-roms/*
+CppStation/roms
+CppStation/Build
 **/*.o
-*.exe
-*.a

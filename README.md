@@ -12,22 +12,16 @@ Project is at a very early stage of the development, not all CPU opcodes are imp
 
 # Build
 
-For the moment only Linux (x86-64) is supported. Project uses a bit of platform dependent code to ease the debugging process on Linux.                    
-Support for other OS like Windows shouldn't be too difficult to do, with a removal or rewriting that debugging code in the future.   
-
-To build the project, one dependency, [fmtlib](https://github.com/fmtlib/fmt/tree/c5aafd8f9003c5f0ac1d9bc00d566fefe60996d7) needs to be built as a static library first:
 ```
-cd fmt
 mkdir build
 cd build
 cmake ..
-make
+make -j8
 ```
 
-The project can be built with
-```
-make
-```
+For the moment only Linux (x86-64) is supported. Project uses a bit of platform dependent code to ease the debugging process on Linux.                    
+Support for other OS like Windows shouldn't be too difficult to do, with a removal or rewriting that debugging code in the future.   
+
 
 You will also need the Playstation BIOS.
 The emulator is mainly tested with BIOS version SCPH1001 whose SHA-1 is 10155d8d6e6e832d6ea66db9bc098321fb5e8ebf.
