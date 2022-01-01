@@ -1,5 +1,6 @@
 // credits to: https://stackoverflow.com/questions/77005/how-to-automatically-generate-a-stacktrace-when-my-program-crashes
 
+#ifdef __linux__
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -155,3 +156,8 @@ void setupSigAct()
 		exit(EXIT_FAILURE);
 	}
 }
+#else
+void setupSigAct()
+{
+}
+#endif
