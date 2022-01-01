@@ -1,0 +1,6 @@
+{
+    "cmake.configureArgs": [
+        "-DCMAKE_TOOLCHAIN_FILE=${env:VCPKG_DIR}\\scripts\\buildsystems\\vcpkg.cmake"
+    ],
+	"cmake.generator": "Visual Studio 16 2019"
+}
