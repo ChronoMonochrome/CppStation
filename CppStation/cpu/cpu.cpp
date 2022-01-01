@@ -58,6 +58,12 @@ namespace cpu {
 
 	void Cpu::store32(uint32_t addr, uint32_t val)
 	{
+		if ((mSr & 0x10000) != 0) {
+			// Cache is isolated, ignore write
+			println("Ignoring store while cache is isolated");
+			return;
+		}
+
 		mBus->store32(addr, val);
 	}
 
