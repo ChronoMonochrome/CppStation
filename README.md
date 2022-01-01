@@ -8,9 +8,12 @@ I don't take any credit for the original design of the project / the original co
 
 # Current status
 
-Project is at a very early stage of the development, not all CPU opcodes are implemented yet.
+Project is at a very early stage of the development.
+Currently all the CPU opcodes are implemented, but the emulator doesn't handle any of the peripherals (DMA, SPU, GPU etc.).
 
 # Build
+
+For Linux, glfw3 and OpenGL dev packages are required.
 
 ```
 mkdir build
@@ -19,9 +22,7 @@ cmake ..
 make -j8
 ```
 
-For the moment only Linux (x86-64) is supported. Project uses a bit of platform dependent code to ease the debugging process on Linux.                    
-Support for other OS like Windows shouldn't be too difficult to do, with a removal or rewriting that debugging code in the future.   
-
+Builds on Windows can be done in VSCode IDE with vcpkg package manager.
 
 You will also need the Playstation BIOS.
 The emulator is mainly tested with BIOS version SCPH1001 whose SHA-1 is 10155d8d6e6e832d6ea66db9bc098321fb5e8ebf.
