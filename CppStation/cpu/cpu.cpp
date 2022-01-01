@@ -778,7 +778,7 @@ namespace cpu {
 		// If the test is "greater than or equal to zero" we need
 		// to negate the comparison above since
 		// ("a >= 0" <=> "!(a < 0)"). The xor takes care of that.
-		test = test ^ is_bgez;
+		test = test ^ (uint32_t)is_bgez;
 
 		if (is_link)
 		{
