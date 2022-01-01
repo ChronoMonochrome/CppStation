@@ -14,7 +14,8 @@ endif()
 
 target_include_directories(CppStation PUBLIC include)
 
-target_link_libraries(CppStation
-  PRIVATE
+target_link_libraries(CppStation PUBLIC
     fmt::fmt
+    glfw
+    glad
 )
