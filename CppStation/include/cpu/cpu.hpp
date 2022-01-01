@@ -30,6 +30,8 @@ namespace cpu {
 			SysCall = 0x8,
 			// Breakpoint (caused by the BREAK opcode)
 			Break = 0x9,
+			// Unsupported coprocessor operation
+			CoprocessorError = 0xb,
 			// Arithmetic overflow
 			Overflow = 0xc,
 		};
@@ -266,6 +268,13 @@ namespace cpu {
 
 		// Bitwise eXclusive Or Immediate
 		void opXori(Instruction &instruction);
+
+		// Coprocessor 1 opcode (does not exist on the Playstation)
+		void opCop1(Instruction &instruction);
+		// Coprocessor 2 opcode (GTE)
+		void opCop2(Instruction &instruction);
+		// Coprocessor 3 opcode (does not exist on the Playstation)
+		void opCop3(Instruction &instruction);
 
 		~Cpu();
 		// The program counter register

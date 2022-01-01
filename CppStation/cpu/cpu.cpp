@@ -260,6 +260,15 @@ namespace cpu {
 		case 0b001110:
 			opXori(instruction);
 			break;
+		case 0b010001:
+			opCop1(instruction);
+			break;
+		case 0b010010:
+			opCop2(instruction);
+			break;
+		case 0b010011:
+			opCop3(instruction);
+			break;
 		default:
 			panic("Unhandled instruction {:08x}", instruction.mData);
 		}
@@ -1123,6 +1132,21 @@ namespace cpu {
 		auto v = reg(s) ^ i;
 
 		setReg(t, v);
+	}
+
+	void Cpu::opCop1(Instruction &instruction)
+	{
+		exception(exception::CoprocessorError);
+	}
+
+	void Cpu::opCop2(Instruction &instruction)
+	{
+		panic("unhandled GTE instruction: {}", instruction.mData);
+	}
+
+	void Cpu::opCop3(Instruction &instruction)
+	{
+		exception(exception::CoprocessorError);
 	}
 
 	Cpu::~Cpu()
