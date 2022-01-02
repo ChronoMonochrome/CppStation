@@ -5,6 +5,9 @@ namespace ram {
 	Ram::Ram()
 	{
 		mData.resize(RAM_SIZE);
+
+		// Default RAM contents are garbage
+		mData.assign(mData.size(), 0xca);
 	}
 
 	Ram::~Ram()
