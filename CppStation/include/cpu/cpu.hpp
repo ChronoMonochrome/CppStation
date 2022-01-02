@@ -42,6 +42,8 @@ namespace cpu {
 	class Instruction {
 	public:
 		Instruction(uint32_t data);
+		~Instruction();
+
 		// Return bits [31:26] of the instruction
 		uint32_t function();
 
@@ -72,13 +74,13 @@ namespace cpu {
 		// Shift Immediate values are stored in bits [10:6]
 		uint32_t shift();
 
-		~Instruction();
 		uint32_t mData;
 	};
 
 	class Cpu {
 	public:
 		Cpu();
+		~Cpu();
 
 		// Decode `instruction`'s opcode and run the function
 		void decodeAndExecute(Instruction &instruction);
@@ -310,7 +312,6 @@ namespace cpu {
 		// Illegal instruction
 		void opIllegal(Instruction &instruction);
 
-		~Cpu();
 		// The program counter register
 		uint32_t mPc;
 		// Instruction count

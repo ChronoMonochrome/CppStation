@@ -39,6 +39,10 @@ namespace cpu {
 		mOutRegs[0] = 0;
 	}
 
+	Cpu::~Cpu()
+	{
+	}
+
 	uint32_t Cpu::reg(RegisterIndex index)
 	{
 		return mRegs[index.val];
@@ -1409,12 +1413,11 @@ namespace cpu {
 		exception(exception::IllegalInstruction);
 	}
 
-
-	Cpu::~Cpu()
+	Instruction::Instruction(uint32_t data) : mData(data)
 	{
 	}
 
-	Instruction::Instruction(uint32_t data) : mData(data)
+	Instruction::~Instruction()
 	{
 	}
 
@@ -1480,10 +1483,5 @@ namespace cpu {
 	uint32_t Instruction::shift()
 	{
 		return (mData >> 6) & 0x1f;
-	}
-
-
-	Instruction::~Instruction()
-	{
 	}
 }
