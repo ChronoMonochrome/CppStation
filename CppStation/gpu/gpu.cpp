@@ -126,6 +126,8 @@ namespace gpu
 
 		switch (opcode)
 		{
+		case 0x00:
+			break; // NOP
 		case 0xe1:
 			gp0DrawMode(val);
 			break;
