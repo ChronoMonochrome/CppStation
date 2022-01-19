@@ -19,6 +19,7 @@ if (UNIX)
       fmt::fmt
       glfw
       glad
+      ${CMAKE_DL_LIBS}
   )
 else()
   target_link_libraries(CppStation PUBLIC
