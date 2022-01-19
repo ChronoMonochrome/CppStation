@@ -1,6 +1,9 @@
 #pragma once
 
+#include <gpu/opengl/renderer.hpp>
 #include "helpers.hpp"
+
+using namespace gpu::opengl::renderer;
 
 namespace bus {
 class Bus;
@@ -102,6 +105,8 @@ class Gpu
 public:
 	Gpu();
 	~Gpu();
+
+	Renderer mRenderer;
 
 	// Texture page base X coordinate (4 bits, 64 byte increment)
 	uint8_t mPageBaseX;

@@ -9,7 +9,7 @@ namespace window {
 class Window
 {
 public:
-	Window(int width, int height, const char* title, bool fullScreenMode);
+	Window();
 	~Window();
 
 	GLFWwindow * mNativeWindow;
@@ -17,12 +17,12 @@ public:
 	int mWidth;
 	int mHeight;
 
+	void init(int width, int height, const char* title, bool fullScreenMode);
 	[[nodiscard]] bool shouldClose() const;
 
 	void installMainCallbacks();
-
 	void close();
-
+	void makeCurrent();
 	void swapBuffers();
 };
 

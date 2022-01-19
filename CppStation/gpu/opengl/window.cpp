@@ -7,7 +7,19 @@ namespace gpu {
 namespace opengl {
 namespace window {
 
-Window::Window(int width, int height, const char* title, bool fullScreenMode)
+Window::Window()
+{
+}
+
+Window::~Window()
+{
+	if (!mNativeWindow)
+		return;
+
+	glfwDestroyWindow(mNativeWindow);
+}
+
+void Window::init(int width, int height, const char* title, bool fullScreenMode)
 {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -27,15 +39,7 @@ Window::Window(int width, int height, const char* title, bool fullScreenMode)
 	mWidth = width;
 	mHeight = height;
 
-	glfwMakeContextCurrent(mNativeWindow);
-}
-
-Window::~Window()
-{
-	if (!mNativeWindow)
-		return;
-
-	glfwDestroyWindow(mNativeWindow);
+	makeCurrent();
 }
 
 bool Window::shouldClose() const
@@ -62,6 +66,11 @@ void Window::close()
 		return;
 
 	glfwSetWindowShouldClose(mNativeWindow, GLFW_TRUE);
+}
+
+void Window::makeCurrent()
+{
+	glfwMakeContextCurrent(mNativeWindow);
 }
 
 void Window::swapBuffers()

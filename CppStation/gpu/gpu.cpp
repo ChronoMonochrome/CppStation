@@ -1,6 +1,5 @@
 #include <gpu/gpu.hpp>
 
-
 namespace gpu {
 
 HorizontalRes::HorizontalRes(uint8_t hr) :
@@ -89,6 +88,7 @@ Gpu::Gpu() :
 	mGp0CommandMethod(&Gpu::gp0Nop),
 	mGp0Mode(Gp0Mode::Command)
 {
+	mRenderer.init();
 }
 
 Gpu::~Gpu()
