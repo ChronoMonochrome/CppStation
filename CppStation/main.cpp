@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include <memory/bios.hpp>
 #include <cpu/cpu.hpp>
@@ -13,59 +14,53 @@
 
 using namespace CppStation;
 
-const int windowWidth = 800;
-const int windowHeight = 640;
-const char* windowTitle = "OpenGL Template";
+static const int windowWidth = 800;
+static const int windowHeight = 640;
+static const char* windowTitle = "OpenGL Template";
 
-int exitWithError(const char* msg)
+static bool shouldClose = false;
+
+void renderLoop()
 {
-	printf(msg);
-	glfwTerminate();
-	return -1;
-}
-
-int main()
-{
-	setupSigAct();
-	bus::Bus bus;
-
-	glfwInit();
-
 	Window window(windowWidth, windowHeight, windowTitle, false);
 	window.installMainCallbacks();
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		println("Failed to initialize GLAD");
 		glfwTerminate();
-		return -1;
+		panic("Failed to initialize GLAD");
 	}
 
+	glfwMakeContextCurrent(window.mNativeWindow);
 	glViewport(0, 0, windowWidth, windowHeight);
-
-	glClearColor(0.0f / 255.0f, 220.0f / 255.0f, 220.0f / 255.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	window.swapBuffers();
-	glfwPollEvents();
 
 	while (!window.shouldClose())
 	{
-		bus.mCpu.runNextInstruction();
-
-		if (Input::isKeyDown(GLFW_KEY_E))
-		{
-			println("E key is being pressed.");
-		}
-
-		if (Input::isKeyDown(GLFW_KEY_ESCAPE))
-		{
-			window.close();
-		}
-
-		// window->swapBuffers();
+		glClearColor(0.0f / 255.0f, 220.0f / 255.0f, 220.0f / 255.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		window.swapBuffers();
 		glfwPollEvents();
 	}
 
+	shouldClose = true;
+}
+
+int main()
+{
+	setupSigAct();
+
+	glfwInit();
+
+	std::thread t1(renderLoop);
+
+	bus::Bus bus;
+	while (!shouldClose)
+	{
+		bus.mCpu.runNextInstruction();
+	}
+
+	t1.join();
 	glfwTerminate();
+
 	return 0;
 }
