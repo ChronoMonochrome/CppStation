@@ -5,20 +5,19 @@
 #include <cpu/cpu.hpp>
 #include <bus.hpp>
 
-#include <ui/core.h>
-#include <ui/Window.h>
-#include <ui/Input.h>
+#include <gpu/opengl/core.hpp>
+#include <gpu/opengl/window.hpp>
 
 #include "helpers.hpp"
 #include "backtrace.hpp"
-
-using namespace CppStation;
 
 static const int windowWidth = 800;
 static const int windowHeight = 640;
 static const char* windowTitle = "OpenGL Template";
 
 static bool shouldClose = false;
+
+using namespace gpu::opengl::window;
 
 void renderLoop()
 {
