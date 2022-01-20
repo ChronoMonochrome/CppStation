@@ -5,6 +5,7 @@
 #include <bus.hpp>
 
 #include <gpu/opengl/core.hpp>
+#include <gpu/opengl/shaderProgram.hpp>
 
 #include "helpers.hpp"
 #include "backtrace.hpp"
@@ -15,11 +16,16 @@ int main()
 
 	bus::Bus bus;
 
-	while (!bus.mGpu.mRenderer.mWindow.shouldClose())
-	{
+
+	bus.mGpu.mRenderer.drawTriangle();
+	bus.mGpu.mRenderer.mWindow.swapBuffers();
+
+	do {
 		bus.mCpu.runNextInstruction();
+	
+		//bus.mGpu.mRenderer.mWindow.swapBuffers();
 		glfwPollEvents();
-	}
+	} while(!bus.mGpu.mRenderer.mWindow.shouldClose());
 
 	return 0;
 }

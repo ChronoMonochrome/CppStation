@@ -6,6 +6,7 @@ include(FetchContent)
 
 add_definitions(-DGLFW_INCLUDE_NONE)
 find_package(glfw3      CONFIG REQUIRED)
+find_package(glm      CONFIG REQUIRED)
 
 if (UNIX)
   find_package(OpenGL            REQUIRED)

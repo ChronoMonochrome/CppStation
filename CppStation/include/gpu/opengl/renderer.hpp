@@ -21,6 +21,9 @@ public:
 	Window mWindow;
 
 	void init();
+
+	void initTriangle();
+	void drawTriangle();
 };
 
 } // namespace gpu

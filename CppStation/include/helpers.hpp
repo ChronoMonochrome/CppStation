@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <fmt/core.h>
@@ -25,4 +26,22 @@ template<typename ... Args>
 static void println(std::string msg, Args ... args)
 {
 	std::cout << fmt::format(msg, args ...) << std::endl;
+}
+
+static std::string readFile(const char* filepath)
+{
+	std::string result;
+	std::ifstream in(filepath, std::ios::in | std::ios::binary);
+	if (in)
+	{
+		in.seekg(0, std::ios::end);
+		result.resize(in.tellg());
+		in.seekg(0, std::ios::beg);
+		in.read(&result[0], result.size());
+		in.close();
+	} else {
+		println("Could not open file: '{}'", filepath);
+	}
+
+	return result;
 }
