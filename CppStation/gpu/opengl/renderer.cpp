@@ -81,10 +81,11 @@ void Renderer::init()
 
 	// 2nd attribute buffer : color
 	glEnableVertexAttribArray(1);
-	glVertexAttribIPointer(
+	glVertexAttribPointer(
 		1,                              // attribute 1. No particular reason for 1, but must match the layout in the shader.
 		3,                              // size
-		GL_UNSIGNED_BYTE,               // type
+		GL_FLOAT,                       // type
+		GL_FALSE,                       // normalized
 		sizeof(Vertex),                 // stride
 		(void*)offsetof(Vertex, color)  // array buffer offset
 	);

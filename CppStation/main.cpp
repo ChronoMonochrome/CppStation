@@ -10,6 +10,8 @@
 #include "helpers.hpp"
 #include "backtrace.hpp"
 
+using gpu::opengl::renderer::Vertex;
+using gpu::opengl::renderer::Position;
 using gpu::opengl::renderer::Color;
 
 int main()
@@ -18,11 +20,6 @@ int main()
 
 	bus::Bus bus;
 
-	Color red = {int8_t(255), int8_t(0), int8_t(0)};
-
-	bus.mGpu.mRenderer.pushTriangle({{512, 512}, red}, {{256, 256}, red}, {{0, 512}, red});
-
-	bus.mGpu.mRenderer.display();
 
 	do {
 		bus.mCpu.runNextInstruction();

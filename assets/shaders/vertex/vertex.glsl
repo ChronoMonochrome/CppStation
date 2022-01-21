@@ -1,7 +1,7 @@
 #version 330 core
 
 layout(location = 0) in ivec2 position;
-layout(location = 1) in ivec3 color;
+layout(location = 1) in vec3 color;
 
 out vec3 v_color;
 
@@ -16,7 +16,5 @@ void main() {
   float ypos = 1.0 - (float(pos.y) / 256);
 
   gl_Position.xyzw = vec4(xpos, ypos, 0.0, 1.0);
-
-  // Glium doesn't support "normalized" for now
-  v_color = color / 255;
+  v_color = color;
 }

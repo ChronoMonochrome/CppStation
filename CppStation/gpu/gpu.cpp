@@ -1,4 +1,9 @@
 #include <gpu/gpu.hpp>
+#include <gpu/opengl/renderer.hpp>
+
+using gpu::opengl::renderer::Vertex;
+using gpu::opengl::renderer::Position;
+using gpu::opengl::renderer::Color;
 
 namespace gpu {
 
@@ -318,7 +323,12 @@ void Gpu::gp0QuadTextureBlendOpaque()
 
 void Gpu::gp0TriangleShadedOpaque()
 {
-	println("Draw triangle shaded");
+	Vertex v1 = {Position::fromPacked(mGp0Command[1]), Color::fromPacked(mGp0Command[0])};
+	Vertex v2 = {Position::fromPacked(mGp0Command[3]), Color::fromPacked(mGp0Command[2])};
+	Vertex v3 = {Position::fromPacked(mGp0Command[5]), Color::fromPacked(mGp0Command[4])};
+
+	println("draw triangle [{} {} - {} {} {}] [{} {} - {} {} {}] [{} {} - {} {} {}]", v1.pos.x, v1.pos.y, v1.color.r, v1.color.g, v1.color.b, v2.pos.x, v2.pos.y, v2.color.r, v2.color.g, v2.color.b, v3.pos.x, v3.pos.y, v3.color.r, v3.color.g, v3.color.b);
+	mRenderer.pushTriangle(v1, v2, v3);
 }
 
 void Gpu::gp0QuadShadedOpaque()
@@ -393,6 +403,11 @@ void Gpu::gp0DrawingOffset()
 	// shift the value to 16bits to force sign extension
 	mDrawingXOffset = ((int16_t)(x << 5)) >> 5;
 	mDrawingYOffset = ((int16_t)(y << 5)) >> 5;
+
+	// XXX Temporary hack: force display when changing offset
+	// since we don't have proper timings
+	mRenderer.display();
+	println("called display()");
 }
 
 void Gpu::gp0MaskBitSetting()
