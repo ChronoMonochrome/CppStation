@@ -12,8 +12,8 @@ namespace opengl {
 namespace renderer {
 
 
-static const int windowWidth = 800;
-static const int windowHeight = 640;
+static const int windowWidth = 1024;
+static const int windowHeight = 512;
 static const char* windowTitle = "OpenGL Template";
 static gpu::opengl::shaderProgram::ShaderProgram basicShader;
 
@@ -27,6 +27,7 @@ Renderer::~Renderer()
 	basicShader.destroy();
 
 	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
 	// Cleanup VBO
 	glDeleteBuffers(1, &mVbo);
@@ -52,7 +53,7 @@ void Renderer::init()
 	glViewport(0, 0, windowWidth, windowHeight);
 
 	// Create and compile our GLSL program from the shaders
-	if (!basicShader.compileAndLink("assets/shaders/vertex/SimpleVertexShader.vertexshader", "assets/shaders/fragment/SimpleFragmentShader.fragmentshader"))
+	if (!basicShader.compileAndLink("assets/shaders/vertex/vertex.glsl", "assets/shaders/fragment/fragment.glsl"))
 	{
 		basicShader.destroy();
 		println("Failed to compile the shader program, exiting early.");
@@ -70,14 +71,22 @@ void Renderer::init()
 
 	// 1rst attribute buffer : vertices
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-	glVertexAttribPointer(
+	glVertexAttribIPointer(
 		0,                              // attribute 0. No particular reason for 0, but must match the layout in the shader.
 		2,                              // size
-		GL_FLOAT,                       // type
-		GL_FALSE,                       // normalized?
+		GL_SHORT,                       // type
 		sizeof(Vertex),                 // stride
 		(void*)offsetof(Vertex, pos)    // array buffer offset
+	);
+
+	// 2nd attribute buffer : color
+	glEnableVertexAttribArray(1);
+	glVertexAttribIPointer(
+		1,                              // attribute 1. No particular reason for 1, but must match the layout in the shader.
+		3,                              // size
+		GL_UNSIGNED_BYTE,               // type
+		sizeof(Vertex),                 // stride
+		(void*)offsetof(Vertex, color)  // array buffer offset
 	);
 }
 

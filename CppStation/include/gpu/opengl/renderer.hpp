@@ -13,19 +13,19 @@ namespace opengl {
 namespace renderer {
 
 // Maximum number of vertex that can be stored in an attribute buffers
-static const uint32_t VERTEX_BUFFER_LEN = 16 * 1024;
+static const uint32_t VERTEX_BUFFER_LEN = 64 * 1024;
 
 struct Position
 {
-	GLfloat x;
-	GLfloat y;
+	int16_t x;
+	int16_t y;
 };
 
 struct Color
 {
-	GLfloat r;
-	GLfloat g;
-	GLfloat b;
+	int8_t r;
+	int8_t g;
+	int8_t b;
 };
 
 struct Vertex

@@ -10,13 +10,18 @@
 #include "helpers.hpp"
 #include "backtrace.hpp"
 
+using gpu::opengl::renderer::Color;
+
 int main()
 {
 	setupSigAct();
 
 	bus::Bus bus;
 
-	bus.mGpu.mRenderer.pushTriangle({-1.0f, -1.0f}, {1.0f, -1.0f}, {0.0f, 1.0f});
+	Color red = {int8_t(255), int8_t(0), int8_t(0)};
+
+	bus.mGpu.mRenderer.pushTriangle({{512, 512}, red}, {{256, 256}, red}, {{0, 512}, red});
+
 	bus.mGpu.mRenderer.display();
 
 	do {
