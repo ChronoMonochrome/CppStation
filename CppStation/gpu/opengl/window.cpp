@@ -40,6 +40,7 @@ void Window::init(int width, int height, const char* title, bool fullScreenMode)
 	mHeight = height;
 
 	makeCurrent();
+	glfwSetWindowUserPointer(mNativeWindow, (void*)this);
 }
 
 bool Window::shouldClose() const
@@ -50,6 +51,14 @@ bool Window::shouldClose() const
 	return glfwWindowShouldClose(mNativeWindow);
 }
 
+void resizeCallback(GLFWwindow* nativeWindow, int newWidth, int newHeight)
+{
+	Window* window = (Window*)glfwGetWindowUserPointer(nativeWindow);
+	window->mWidth = newWidth;
+	window->mHeight = newHeight;
+	glViewport(0, 0, newWidth, newHeight);
+}
+
 void Window::installMainCallbacks()
 {
 	if (!mNativeWindow)
@@ -58,6 +67,7 @@ void Window::installMainCallbacks()
 	glfwSetKeyCallback(mNativeWindow, ui::input::keyCallback);
 	glfwSetCursorPosCallback(mNativeWindow, ui::input::mouseCallback);
 	glfwSetMouseButtonCallback(mNativeWindow, ui::input::mouseButtonCallback);
+	glfwSetWindowSizeCallback(mNativeWindow, resizeCallback);
 }
 
 void Window::close()
