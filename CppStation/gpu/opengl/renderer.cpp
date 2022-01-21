@@ -76,12 +76,12 @@ void Renderer::init()
 		2,                              // size
 		GL_FLOAT,                       // type
 		GL_FALSE,                       // normalized?
-		0,                              // stride
-		(void*)0                        // array buffer offset
+		sizeof(Vertex),                 // stride
+		(void*)offsetof(Vertex, pos)    // array buffer offset
 	);
 }
 
-void Renderer::pushVertex(V2f pos)
+void Renderer::pushVertex(Vertex v)
 {
 	if (mVerticesNum + 1 > VERTEX_BUFFER_LEN)
 	{
@@ -89,12 +89,11 @@ void Renderer::pushVertex(V2f pos)
 		draw();
 	}
 
-    mVertexBuf[mVerticesNum * 2]     = pos.x;
-    mVertexBuf[mVerticesNum * 2 + 1] = pos.y;
+    mVertexBuf[mVerticesNum] = v;
     mVerticesNum++;
 }
 
-void Renderer::pushTriangle(V2f p1, V2f p2, V2f p3)
+void Renderer::pushTriangle(Vertex v1, Vertex v2, Vertex v3)
 {
 	if (mVerticesNum + 3 > VERTEX_BUFFER_LEN)
 	{
@@ -102,9 +101,9 @@ void Renderer::pushTriangle(V2f p1, V2f p2, V2f p3)
 		draw();
 	}
 
-	pushVertex(p1);
-	pushVertex(p2);
-	pushVertex(p3);
+	pushVertex(v1);
+	pushVertex(v2);
+	pushVertex(v3);
 }
 
 void Renderer::draw()
@@ -112,7 +111,7 @@ void Renderer::draw()
 	glClear(GL_COLOR_BUFFER_BIT);
     glBufferSubData(GL_ARRAY_BUFFER,
                     0,
-                    mVerticesNum * 2 * sizeof(GLfloat),
+                    sizeof(Vertex) * mVerticesNum,
                     mVertexBuf);
 	glDrawArraysInstanced(GL_TRIANGLES, 0, (GLsizei) mVerticesNum, 1);
 
