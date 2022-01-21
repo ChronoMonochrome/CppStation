@@ -16,14 +16,12 @@ int main()
 
 	bus::Bus bus;
 
-
-	bus.mGpu.mRenderer.drawTriangle();
-	bus.mGpu.mRenderer.mWindow.swapBuffers();
+	bus.mGpu.mRenderer.pushTriangle({-1.0f, -1.0f}, {1.0f, -1.0f}, {0.0f, 1.0f});
+	bus.mGpu.mRenderer.display();
 
 	do {
 		bus.mCpu.runNextInstruction();
-	
-		//bus.mGpu.mRenderer.mWindow.swapBuffers();
+
 		glfwPollEvents();
 	} while(!bus.mGpu.mRenderer.mWindow.shouldClose());
 
