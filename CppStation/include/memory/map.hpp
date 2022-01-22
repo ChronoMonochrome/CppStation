@@ -4,6 +4,12 @@
 #include <memory/ram.hpp>
 #include <cstdint>
 
+#define contains(addr, end, base) (addr >= base) && (addr < end) ? addr - base : -1
+
+// Mask a CPU address to remove the region bits.
+#define maskRegion(addr) addr & map::REGION_MASK[(addr >> 29)]
+
+
 namespace map {
 
 // Mask array used to strip the region bits of the address. The
@@ -25,11 +31,6 @@ public:
 	uint32_t mBase, mSize, mEnd;
 };
 
-static inline constexpr int32_t contains(uint32_t addr, uint32_t end, uint32_t base)
-{
-	return (addr >= base) && (addr < end) ? addr - base : -1;
-}
-
 class Map {
 public:
 	Map();
@@ -48,12 +49,5 @@ public:
 	Range mDMA;
 	Range mGPU;
 };
-
-// Mask a CPU address to remove the region bits.
-inline constexpr uint32_t maskRegion(uint32_t addr)
-{
-	// Index address space in 512MB chunks
-	return addr & REGION_MASK[(addr >> 29)];
-}
 
 } // namespace map
