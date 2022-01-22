@@ -1,5 +1,3 @@
-#pragma once
-
 #include <gpu/opengl/renderer.hpp>
 #include <gpu/opengl/shaderProgram.hpp>
 
