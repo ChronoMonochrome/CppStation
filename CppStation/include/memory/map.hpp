@@ -11,7 +11,7 @@ namespace map {
 // effectively matches 512kB of the address space. KSEG2 is not
 // touched since it doesn't share anything with the other
 // regions.
-const uint32_t REGION_MASK[] = {
+constexpr uint32_t REGION_MASK[] = {
 	0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, // KUSEG: 2048MB
 	0x7fffffff,                                     // KSEG0:  512MB
 	0x1fffffff,                                     // KSEG1:  512MB
@@ -21,18 +21,20 @@ const uint32_t REGION_MASK[] = {
 class Range {
 public:
 	Range(uint32_t base, uint32_t size);
-	int32_t contains(uint32_t addr);
 	~Range();
-private:
 	uint32_t mBase, mSize, mEnd;
 };
+
+static inline constexpr int32_t contains(uint32_t addr, uint32_t end, uint32_t base)
+{
+	return (addr >= base) && (addr < end) ? addr - base : -1;
+}
 
 class Map {
 public:
 	Map();
 	~Map();
-	// Mask a CPU address to remove the region bits.
-	uint32_t maskRegion(uint32_t addr);
+
 	Range mBIOS;
 	Range mMEM_CONTROL;
 	Range mRAM_SIZE;
@@ -46,5 +48,12 @@ public:
 	Range mDMA;
 	Range mGPU;
 };
+
+// Mask a CPU address to remove the region bits.
+inline constexpr uint32_t maskRegion(uint32_t addr)
+{
+	// Index address space in 512MB chunks
+	return addr & REGION_MASK[(addr >> 29)];
+}
 
 } // namespace map

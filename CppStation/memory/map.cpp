@@ -7,11 +7,6 @@ Range::Range(uint32_t base, uint32_t size) : mBase(base), mSize(size), mEnd(base
 {
 }
 
-int32_t Range::contains(uint32_t addr)
-{
-	return (addr >= mBase) && (addr < mEnd) ? addr - mBase : -1;
-}
-
 Range::~Range()
 {
 }
@@ -41,14 +36,6 @@ Map::Map() :
 	// GPU registers
 	mGPU(0x1f801810, 8)
 {
-}
-
-uint32_t Map::maskRegion(uint32_t addr)
-{
-	// Index address space in 512MB chunks
-	uint32_t index = (addr >> 29);
-
-	return addr & REGION_MASK[index];
 }
 
 Map::~Map()

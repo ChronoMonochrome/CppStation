@@ -22,23 +22,23 @@ Bus::~Bus()
 
 uint32_t Bus::load32(uint32_t addr)
 {
-	uint32_t abs_addr = mMap.maskRegion(addr);
-	int32_t offset = mMap.mRAM.contains(abs_addr);
+	uint32_t abs_addr = map::maskRegion(addr);
+	int32_t offset = map::contains(abs_addr, mMap.mRAM.mEnd, mMap.mRAM.mBase);
 	if (offset != -1)
 		return mRam.load32(offset);
 
-	offset = mMap.mBIOS.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mBIOS.mEnd, mMap.mBIOS.mBase);
 	if (offset != -1)
 		return mBios.load32(offset);
 
-	offset = mMap.mIRQ_CONTROL.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mIRQ_CONTROL.mEnd, mMap.mIRQ_CONTROL.mBase);
 	if (offset != -1)
 	{
 		println("IRQ control read {:x}", offset);
 		return 0;
 	}
 
-	offset = mMap.mDMA.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mDMA.mEnd, mMap.mDMA.mBase);
 	if (offset != -1)
 	{
 		uint32_t res = dmaReg(offset);
@@ -46,7 +46,7 @@ uint32_t Bus::load32(uint32_t addr)
 		return res;
 	}
 
-	offset = mMap.mGPU.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mGPU.mEnd, mMap.mGPU.mBase);
 	if (offset != -1)
 	{
 		println("GPU read: {}", offset);
@@ -62,7 +62,7 @@ uint32_t Bus::load32(uint32_t addr)
 		}
 	}
 
-	offset = mMap.mTIMERS.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mTIMERS.mEnd, mMap.mTIMERS.mBase);
 	if (offset != -1)
 	{
 		println("Unhandled read from timer register {:x}", offset);
@@ -74,14 +74,14 @@ uint32_t Bus::load32(uint32_t addr)
 
 void Bus::store32(uint32_t addr, uint32_t val)
 {
-	uint32_t abs_addr = mMap.maskRegion(addr);
-	int32_t offset = mMap.mRAM.contains(abs_addr);
+	uint32_t abs_addr = map::maskRegion(addr);
+	int32_t offset = map::contains(abs_addr, mMap.mRAM.mEnd, mMap.mRAM.mBase);
 	if (offset != -1) {
 		mRam.store32(offset, val);
 		return;
 	}
 
-	offset = mMap.mMEM_CONTROL.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mMEM_CONTROL.mEnd, mMap.mMEM_CONTROL.mBase);
 	if (offset != -1) {
 		switch (offset)
 		{
@@ -99,32 +99,32 @@ void Bus::store32(uint32_t addr, uint32_t val)
 		return;
 	}
 
-	offset = mMap.mRAM_SIZE.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mRAM_SIZE.mEnd, mMap.mRAM_SIZE.mBase);
 	if (offset != -1) {
 		println("Unhandled write to RAM_SIZE register");
 		return;
 	}
 
-	offset = mMap.mCACHE_CONTROL.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mCACHE_CONTROL.mEnd, mMap.mCACHE_CONTROL.mBase);
 	if (offset != -1) {
 		println("Unhandled write to CACHE_CONTROL register");
 		return;
 	}
 
-	offset = mMap.mIRQ_CONTROL.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mIRQ_CONTROL.mEnd, mMap.mIRQ_CONTROL.mBase);
 	if (offset != -1) {
 		println("IRQ control: {:x} <- {:08x}", offset, val);
 		return;
 	}
 
-	offset = mMap.mDMA.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mDMA.mEnd, mMap.mDMA.mBase);
 	if (offset != -1) {
 		println("DMA write: {:08x} {:08x}", abs_addr, val);
 		setDmaReg(offset, val);
 		return;
 	}
 
-	offset = mMap.mGPU.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mGPU.mEnd, mMap.mGPU.mBase);
 	if (offset != -1) {
 		switch (offset)
 		{
@@ -140,7 +140,7 @@ void Bus::store32(uint32_t addr, uint32_t val)
 		return;
 	}
 
-	offset = mMap.mTIMERS.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mTIMERS.mEnd, mMap.mTIMERS.mBase);
 	if (offset != -1) {
 		println("Unhandled write to timer register {:x}: {:08x}", offset, val);
 		return;
@@ -151,20 +151,20 @@ void Bus::store32(uint32_t addr, uint32_t val)
 
 uint16_t Bus::load16(uint32_t addr)
 {
-	uint32_t abs_addr = mMap.maskRegion(addr);
+	uint32_t abs_addr = map::maskRegion(addr);
 
-	int32_t offset = mMap.mRAM.contains(abs_addr);
+	int32_t offset = map::contains(abs_addr, mMap.mRAM.mEnd, mMap.mRAM.mBase);
 	if (offset != -1)
 		return mRam.load16(offset);
 
-	offset = mMap.mSPU.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mSPU.mEnd, mMap.mSPU.mBase);
 	if (offset != -1)
 	{
 		println("Unhandled read from SPU register {:08x}", abs_addr);
 		return 0;
 	}
 
-	offset = mMap.mIRQ_CONTROL.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mIRQ_CONTROL.mEnd, mMap.mIRQ_CONTROL.mBase);
 	if (offset != -1)
 	{
 		println("IRQ control read {:x}", offset);
@@ -176,14 +176,14 @@ uint16_t Bus::load16(uint32_t addr)
 
 void Bus::store16(uint32_t addr, uint16_t val)
 {
-	uint32_t abs_addr = mMap.maskRegion(addr);
-	int32_t offset = mMap.mRAM.contains(abs_addr);
+	uint32_t abs_addr = map::maskRegion(addr);
+	int32_t offset = map::contains(abs_addr, mMap.mRAM.mEnd, mMap.mRAM.mBase);
 	if (offset != -1) {
 		mRam.store16(offset, val);
 		return;
 	}
 
-	offset = mMap.mSPU.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mSPU.mEnd, mMap.mSPU.mBase);
 	if (offset != -1)
 	{
 		println("Unhandled write to SPU register {:08x}: {:04x}",
@@ -191,13 +191,13 @@ void Bus::store16(uint32_t addr, uint16_t val)
 		return;
 	}
 
-	offset = mMap.mTIMERS.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mTIMERS.mEnd, mMap.mTIMERS.mBase);
 	if (offset != -1) {
 		println("Unhandled write to timer register {:x}", offset);
 		return;
 	}
 
-	offset = mMap.mIRQ_CONTROL.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mIRQ_CONTROL.mEnd, mMap.mIRQ_CONTROL.mBase);
 	if (offset != -1) {
 		println("IRQ control write {:x}, {:04x}", offset, val);
 		return;
@@ -208,19 +208,19 @@ void Bus::store16(uint32_t addr, uint16_t val)
 
 uint8_t Bus::load8(uint32_t addr)
 {
-	uint32_t abs_addr = mMap.maskRegion(addr);
-	int32_t offset = mMap.mRAM.contains(abs_addr);
+	uint32_t abs_addr = map::maskRegion(addr);
+	int32_t offset = map::contains(abs_addr, mMap.mRAM.mEnd, mMap.mRAM.mBase);
 	if (offset != -1)
 	{
 		return mRam.load8(offset);
 	}
-	offset = mMap.mBIOS.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mBIOS.mEnd, mMap.mBIOS.mBase);
 	if (offset != -1)
 	{
 		return mBios.load8(offset);
 	}
 
-	offset = mMap.mEXPANSION_1.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mEXPANSION_1.mEnd, mMap.mEXPANSION_1.mBase);
 	if (offset != -1)
 	{
 		// No expansion implemented
@@ -232,14 +232,14 @@ uint8_t Bus::load8(uint32_t addr)
 
 void Bus::store8(uint32_t addr, uint8_t val)
 {
-	uint32_t abs_addr = mMap.maskRegion(addr);
-	int32_t offset = mMap.mRAM.contains(abs_addr);
+	uint32_t abs_addr = map::maskRegion(addr);
+	int32_t offset = map::contains(abs_addr, mMap.mRAM.mEnd, mMap.mRAM.mBase);
 	if (offset != -1)
 	{
 		mRam.store8(offset, val);
 		return;
 	}
-	offset = mMap.mEXPANSION_2.contains(abs_addr);
+	offset = map::contains(abs_addr, mMap.mEXPANSION_2.mEnd, mMap.mEXPANSION_2.mBase);
 	if (offset != -1)
 	{
 		println("Unhandled write to expansion 2 register {:08x}: {:02x}", abs_addr, val);
