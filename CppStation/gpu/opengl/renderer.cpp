@@ -134,6 +134,7 @@ void Renderer::display()
 	draw();
 
 	mWindow.swapBuffers();
+	glfwPollEvents();
 }
 
 } // namespace gpu

@@ -23,8 +23,6 @@ int main()
 
 	do {
 		bus.mCpu.runNextInstruction();
-
-		glfwPollEvents();
 	} while(!bus.mGpu.mRenderer.mWindow.shouldClose());
 
 	return 0;
