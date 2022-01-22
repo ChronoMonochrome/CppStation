@@ -1,14 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <fstream>
-#include <iterator>
-#include <vector>
-#include <cstring>
-#include <cstdint>
-#include <cstddef>
-#include <iostream>
-
 #include "helpers.hpp"
 
 namespace bus {
@@ -28,7 +19,7 @@ public:
 	~Bios();
 	bool mIsValidImage = false;
 public:
-	std::vector<uint8_t> mBuffer;
+	char *mBuffer;
 	// Linkage to the communications bus
 	bus::Bus *mBus = nullptr;
 	// Link this CPU to a communications bus

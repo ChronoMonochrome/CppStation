@@ -7,10 +7,14 @@ namespace bios {
 
 Bios::Bios()
 {
+	mBuffer = (char*)malloc(BIOS_SIZE);
+	if (!mBuffer)
+		panic("Not enough memory to read BIOS file");
 }
 
 Bios::~Bios()
 {
+	free(mBuffer);
 }
 
 auto Bios::loadFromFile(std::string &path) -> cpp::result<uint64_t, std::string>
@@ -24,8 +28,7 @@ auto Bios::loadFromFile(std::string &path) -> cpp::result<uint64_t, std::string>
 		if (bufferSize == BIOS_SIZE) {
 			mIsValidImage = true;
 			ifs.seekg(0, std::ios_base::beg);
-			mBuffer.resize(bufferSize);
-			ifs.read((char*)mBuffer.data(), mBuffer.size());
+			ifs.read(mBuffer, BIOS_SIZE);
 		}
 		return bufferSize;
 	}

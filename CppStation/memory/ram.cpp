@@ -5,14 +5,17 @@ namespace ram {
 
 Ram::Ram()
 {
-	mData.resize(RAM_SIZE);
+	mData = (char*)malloc(RAM_SIZE);
+	if (!mData)
+		panic("Not enough memory to allocate RAM buffer");
 
 	// Default RAM contents are garbage
-	mData.assign(mData.size(), 0xca);
+	memset(mData, 0xca, RAM_SIZE);
 }
 
 Ram::~Ram()
 {
+	free(mData);
 }
 
 // Fetch the 32 bit little endian word at ‘offset‘

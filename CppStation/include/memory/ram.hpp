@@ -32,7 +32,7 @@ public:
 	// Link RAM to a communications bus
 	void connectBus(bus::Bus *n) { mBus = n; }
 private:
-	std::vector<uint8_t> mData;
+	char *mData;
 };
 
 } // namespace ram

@@ -1,9 +1,14 @@
 #pragma once
 
 #include <iostream>
+#include <iterator>
 #include <fstream>
 #include <memory>
 #include <string>
+#include <vector>
+#include <cstring>
+#include <cstdint>
+#include <cstddef>
 #include <fmt/core.h>
 
 #include "result.hpp"
