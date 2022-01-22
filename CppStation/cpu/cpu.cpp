@@ -19,7 +19,7 @@ Cpu::Cpu() :
 	mIp(0),
 	mNextPc(mPc + 4),
 	mCurrentPc(0),
-	mLoadRegIdx(0),
+	mLoadRegIdx({0}),
 	mLoadReg(0),
 	mSr(0),
 	mCause(0),
@@ -656,7 +656,7 @@ void Cpu::opJal(Instruction &instruction)
 	uint32_t ra = mNextPc;
 
 	// Store return address in $31 ($ra)
-	RegisterIndex regIdx(31);
+	RegisterIndex regIdx = {31};
 
 	setReg(regIdx, ra);
 
@@ -856,7 +856,7 @@ void Cpu::opBxx(Instruction &instruction)
 		uint32_t ra = mNextPc;
 
 		// Store return address in R31
-		setReg(RegisterIndex(31), ra);
+		setReg({31}, ra);
 	}
 
 	if (test != 0)
@@ -1443,21 +1443,21 @@ uint32_t Instruction::copOpcode()
 // Return register index in bits [20:16]
 RegisterIndex Instruction::t()
 {
-	RegisterIndex ret((mData >> 16) & 0x1f);
+	RegisterIndex ret = {(mData >> 16) & 0x1f};
 	return ret;
 }
 
 // Return register index in bits [25:21]
 RegisterIndex Instruction::s()
 {
-	RegisterIndex ret((mData >> 21) & 0x1f);
+	RegisterIndex ret = {(mData >> 21) & 0x1f};
 	return ret;
 }
 
 // Return register index in bits [15:11]
 RegisterIndex Instruction::d()
 {
-	RegisterIndex ret((mData >> 11) & 0x1f);
+	RegisterIndex ret = {(mData >> 11) & 0x1f};
 	return ret;
 }
 

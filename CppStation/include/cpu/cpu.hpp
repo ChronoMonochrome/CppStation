@@ -8,15 +8,8 @@ class Bus;
 
 namespace cpu {
 
-class RegisterIndex
+struct RegisterIndex
 {
-public:
-	RegisterIndex(uint32_t _val) : val(_val)
-	{
-	}
-	~RegisterIndex()
-	{
-	}
 	uint32_t val;
 };
 
