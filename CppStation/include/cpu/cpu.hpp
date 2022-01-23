@@ -33,43 +33,70 @@ namespace exception {
 	};
 }
 
-class Instruction {
-public:
-	Instruction(uint32_t data);
-	~Instruction();
+namespace Instruction 
+{
 
-	// Return bits [31:26] of the instruction
-	uint32_t function();
+// Return bits [31:26] of the instruction
+static inline constexpr uint32_t function(uint32_t instruction)
+{
+	return instruction >> 26;
+}
 
-	// Return bits [5:0] of the instruction
-	uint32_t subfunction();
+// Return bits [5:0] of the instruction
+static inline constexpr uint32_t subfunction(uint32_t instruction)
+{
+	return instruction & 0x3f;
+}
 
-	// Return coprocessor opcode in bits [25:21]
-	uint32_t copOpcode();
+// Return coprocessor opcode in bits [25:21]
+static inline constexpr uint32_t copOpcode(uint32_t instruction)
+{
+	return (instruction >> 21) & 0x1f;
+}
 
-	// Return register index in bits [20:16]
-	RegisterIndex t();
+// Return register index in bits [20:16]
+static inline constexpr RegisterIndex t(uint32_t instruction)
+{
+	return {(instruction >> 16) & 0x1f};
+}
 
-	// Return register index in bits [25:21]
-	RegisterIndex s();
+// Return register index in bits [25:21]
+static inline constexpr RegisterIndex s(uint32_t instruction)
+{
+	return {(instruction >> 21) & 0x1f};
+}
 
-	// Return register index in bits [15:11]
-	RegisterIndex d();
+// Return register index in bits [15:11]
+static inline constexpr RegisterIndex d(uint32_t instruction)
+{
+	return {(instruction >> 11) & 0x1f};
+}
 
-	// Return immediate value in bits [16:0]
-	uint32_t imm();
+// Return immediate value in bits [16:0]
+static inline constexpr uint32_t imm(uint32_t instruction)
+{
+	return instruction & 0xffff;
+}
 
-	// Return immediate value in bits [16:0] as a sign-extended 32bit value
-	uint32_t imm_se();
+// Return immediate value in bits [16:0] as a sign-extended 32bit value
+static inline constexpr uint32_t imm_se(uint32_t instruction)
+{
+	return (uint32_t)((int16_t)(instruction & 0xffff));
+}
 
-	// Jump target stored in bits [25:0]
-	uint32_t imm_jump();
+// Jump target stored in bits [25:0]
+static inline constexpr uint32_t imm_jump(uint32_t instruction)
+{
+	return instruction & 0x3ffffff;
+}
 
-	// Shift Immediate values are stored in bits [10:6]
-	uint32_t shift();
+// Shift Immediate values are stored in bits [10:6]
+static inline constexpr uint32_t shift(uint32_t instruction)
+{
+	return (instruction >> 6) & 0x1f;
+}
 
-	uint32_t mData;
-};
+} // namespace Instruction
 
 class Cpu {
 public:
@@ -77,13 +104,13 @@ public:
 	~Cpu();
 
 	// Decode `instruction`'s opcode and run the function
-	void decodeAndExecute(Instruction &instruction);
+	void decodeAndExecute(uint32_t instruction);
 	void runNextInstruction();
 	// Trigger an exception
 	void exception(enum exception::Exception cause);
 
 	// System Call
-	void opSyscall(Instruction &instruction);
+	void opSyscall(uint32_t instruction);
 	// Retrieve the value of a general purpose register
 	uint32_t reg(RegisterIndex index);
 	// Set the value of a general purpose register
@@ -102,209 +129,209 @@ public:
 	void store8(uint32_t addr, uint8_t val);
 
 	// Load Upper Immediate
-	void opLui(Instruction &instruction);
+	void opLui(uint32_t instruction);
 
 	// Bitwise Or Immediate
-	void opOri(Instruction &instruction);
+	void opOri(uint32_t instruction);
 
 	// Store Word
-	void opSw(Instruction &instruction);
+	void opSw(uint32_t instruction);
 
 	// Shift Left Logical
-	void opSll(Instruction &instruction);
+	void opSll(uint32_t instruction);
 
 	// Add Immediate Unsigned
-	void opAddiu(Instruction &instruction);
+	void opAddiu(uint32_t instruction);
 
 	// Jump
-	void opJ(Instruction &instruction);
+	void opJ(uint32_t instruction);
 
 	// Bitwise Or
-	void opOr(Instruction &instruction);
+	void opOr(uint32_t instruction);
 
 	// Coprocessor 0 opcode
-	void opCop0(Instruction &instruction);
+	void opCop0(uint32_t instruction);
 
 	// Move To Coprocessor 0
-	void opMtc0(Instruction &instruction);
+	void opMtc0(uint32_t instruction);
 
 	// Branch to immediate value `offset`
 	void branch(uint32_t offset);
 
 	// Branch if Not Equal
-	void opBne(Instruction &instruction);
+	void opBne(uint32_t instruction);
 
 	// Add Immediate and check for signed overflow
-	void opAddi(Instruction &instruction);
+	void opAddi(uint32_t instruction);
 
 	// Load Word
-	void opLw(Instruction &instruction);
+	void opLw(uint32_t instruction);
 
 	// Set on Less Than Unsigned
-	void opSltu(Instruction &instruction);
+	void opSltu(uint32_t instruction);
 
 	// Add Unsigned
-	void opAddu(Instruction &instruction);
+	void opAddu(uint32_t instruction);
 
 	// Store Halfword
-	void opSh(Instruction &instruction);
+	void opSh(uint32_t instruction);
 
 	// Jump And Link
-	void opJal(Instruction &instruction);
+	void opJal(uint32_t instruction);
 
 	// Bitwise And Immediate
-	void opAndi(Instruction &instruction);
+	void opAndi(uint32_t instruction);
 
 	// Store Byte
-	void opSb(Instruction &instruction);
+	void opSb(uint32_t instruction);
 
 	// Jump Register
-	void opJr(Instruction &instruction);
+	void opJr(uint32_t instruction);
 
 	// Load Byte (signed)
-	void opLb(Instruction &instruction);
+	void opLb(uint32_t instruction);
 
 	// Branch if Equal
-	void opBeq(Instruction &instruction);
+	void opBeq(uint32_t instruction);
 
 	// Move From Coprocessor 0
-	void opMfc0(Instruction &instruction);
+	void opMfc0(uint32_t instruction);
 
 	// Bitwise And
-	void opAnd(Instruction &instruction);
+	void opAnd(uint32_t instruction);
 
 	// Add and check for signed overflow
-	void opAdd(Instruction &instruction);
+	void opAdd(uint32_t instruction);
 
 	// Branch if Greater Than Zero
-	void opBgtz(Instruction &instruction);
+	void opBgtz(uint32_t instruction);
 
 	// Branch if Less than or Equal to Zero
-	void opBlez(Instruction &instruction);
+	void opBlez(uint32_t instruction);
 
 	// Load Byte Unsigned
-	void opLbu(Instruction &instruction);
+	void opLbu(uint32_t instruction);
 
 	// Jump And Link Register
-	void opJalr(Instruction &instruction);
+	void opJalr(uint32_t instruction);
 
 	// Various branch instructions: BGEZ, BLTZ, BGEZAL, BLTZAL.
 	// Bits 16 and 20 are used to figure out which one to use.
-	void opBxx(Instruction &instruction);
+	void opBxx(uint32_t instruction);
 
 	// Set if Less Than Immediate (signed)
-	void opSlti(Instruction &instruction);
+	void opSlti(uint32_t instruction);
 
 	// Substract Unsigned
-	void opSubu(Instruction &instruction);
+	void opSubu(uint32_t instruction);
 
 	// Shift Right Arithmetic
-	void opSra(Instruction &instruction);
+	void opSra(uint32_t instruction);
 
 	// Divide (signed)
-	void opDiv(Instruction &instruction);
+	void opDiv(uint32_t instruction);
 
 	// Move From LO
-	void opMflo(Instruction &instruction);
+	void opMflo(uint32_t instruction);
 
 	// Shift Right Logical
-	void opSrl(Instruction &instruction);
+	void opSrl(uint32_t instruction);
 
 	// Set if Less Than Immediate Unsigned
-	void opSltiu(Instruction &instruction);
+	void opSltiu(uint32_t instruction);
 
 	// Divide Unsigned
-	void opDivu(Instruction &instruction);
+	void opDivu(uint32_t instruction);
 
 	// Move From HI
-	void opMfhi(Instruction &instruction);
+	void opMfhi(uint32_t instruction);
 
 	// Set on Less Than (signed)
-	void opSlt(Instruction &instruction);
+	void opSlt(uint32_t instruction);
 
 	// Move to LO
-	void opMtlo(Instruction &instruction);
+	void opMtlo(uint32_t instruction);
 
 	// Move to HI
-	void opMthi(Instruction &instruction);
+	void opMthi(uint32_t instruction);
 
 	// Return From Exception
-	void opRfe(Instruction &instruction);
+	void opRfe(uint32_t instruction);
 
 	// Load Halfword Unsigned
-	void opLhu(Instruction &instruction);
+	void opLhu(uint32_t instruction);
 
 	// Shift Left Logical Variable
-	void opSllv(Instruction &instruction);
+	void opSllv(uint32_t instruction);
 
 	// Load Halfword (signed)
-	void opLh(Instruction &instruction);
+	void opLh(uint32_t instruction);
 
 	// Bitwise Not Or
-	void opNor(Instruction &instruction);
+	void opNor(uint32_t instruction);
 
 	// Shift Right Arithmetic Variable
-	void opSrav(Instruction &instruction);
+	void opSrav(uint32_t instruction);
 
 	// Shift Right Logical Variable
-	void opSrlv(Instruction &instruction);
+	void opSrlv(uint32_t instruction);
 
 	// Multiply Unsigned
-	void opMultu(Instruction &instruction);
+	void opMultu(uint32_t instruction);
 
 	// Bitwise Exclusive Or
-	void opXor(Instruction &instruction);
+	void opXor(uint32_t instruction);
 
 	// Break
-	void opBreak(Instruction &instruction);
+	void opBreak(uint32_t instruction);
 
 	// Multiply (signed)
-	void opMult(Instruction &instruction);
+	void opMult(uint32_t instruction);
 
 	// Substract and check for signed overflow
-	void opSub(Instruction &instruction);
+	void opSub(uint32_t instruction);
 
 	// Bitwise eXclusive Or Immediate
-	void opXori(Instruction &instruction);
+	void opXori(uint32_t instruction);
 
 	// Coprocessor 1 opcode (does not exist on the Playstation)
-	void opCop1(Instruction &instruction);
+	void opCop1(uint32_t instruction);
 	// Coprocessor 2 opcode (GTE)
-	void opCop2(Instruction &instruction);
+	void opCop2(uint32_t instruction);
 	// Coprocessor 3 opcode (does not exist on the Playstation)
-	void opCop3(Instruction &instruction);
+	void opCop3(uint32_t instruction);
 
 	// Load Word Left (little-endian only implementation)
-	void opLwl(Instruction &instruction);
+	void opLwl(uint32_t instruction);
 
 	// Load Word Right (little-endian only implementation)
-	void opLwr(Instruction &instruction);
+	void opLwr(uint32_t instruction);
 
 	// Store Word Left (little-endian only implementation)
-	void opSwl(Instruction &instruction);
+	void opSwl(uint32_t instruction);
 
 	// Store Word Right (little-endian only implementation)
-	void opSwr(Instruction &instruction);
+	void opSwr(uint32_t instruction);
 
 	// Load Word in Coprocessor 0
-	void opLwc0(Instruction &instruction);
+	void opLwc0(uint32_t instruction);
 	// Load Word in Coprocessor 1
-	void opLwc1(Instruction &instruction);
+	void opLwc1(uint32_t instruction);
 	// Load Word in Coprocessor 2
-	void opLwc2(Instruction &instruction);
+	void opLwc2(uint32_t instruction);
 	// Load Word in Coprocessor 3
-	void opLwc3(Instruction &instruction);
+	void opLwc3(uint32_t instruction);
 	// Store Word in Coprocessor 0
-	void opSwc0(Instruction &instruction);
+	void opSwc0(uint32_t instruction);
 	// Store Word in Coprocessor 1
-	void opSwc1(Instruction &instruction);
+	void opSwc1(uint32_t instruction);
 	// Store Word in Coprocessor 2
-	void opSwc2(Instruction &instruction);
+	void opSwc2(uint32_t instruction);
 	// Store Word in Coprocessor 3
-	void opSwc3(Instruction &instruction);
+	void opSwc3(uint32_t instruction);
 
 	// Illegal instruction
-	void opIllegal(Instruction &instruction);
+	void opIllegal(uint32_t instruction);
 
 	// The program counter register
 	uint32_t mPc;

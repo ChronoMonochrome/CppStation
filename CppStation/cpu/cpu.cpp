@@ -104,12 +104,12 @@ void Cpu::store8(uint32_t addr, uint8_t val)
 	mBus->store8(addr, val);
 }
 
-void Cpu::decodeAndExecute(Instruction &instruction)
+void Cpu::decodeAndExecute(uint32_t instruction)
 {
-	switch (instruction.function())
+	switch (Instruction::function(instruction))
 	{
 	case 0b000000:
-		switch (instruction.subfunction())
+		switch (Instruction::subfunction(instruction))
 		{
 		case 0b000000:
 			opSll(instruction);
@@ -335,10 +335,10 @@ void Cpu::runNextInstruction()
 	}
 
 	// Fetch instruction at PC
-	Instruction instruction(load32(mPc));
+	uint32_t instruction = load32(mPc);
 #ifdef DEBUG
 	if (mIp >= 2695640)
-		println("{} instruction: {:08x} pc={:08x} mNextPc={:08x} mCurrentPc={:08x}", mIp, instruction.mData, mPc, mNextPc, mCurrentPc);
+		println("{} instruction: {:08x} pc={:08x} mNextPc={:08x} mCurrentPc={:08x}", mIp, instruction, mPc, mNextPc, mCurrentPc);
 #endif
 
 	// Increment PC to point to the next instruction. and
@@ -418,32 +418,32 @@ void Cpu::exception(enum exception::Exception cause)
 	mNextPc = mPc + 4;
 }
 
-void Cpu::opSyscall(Instruction &instruction)
+void Cpu::opSyscall(uint32_t instruction)
 {
 	exception(exception::SysCall);
 }
 
-void Cpu::opLui(Instruction &instruction)
+void Cpu::opLui(uint32_t instruction)
 {
-	auto i = instruction.imm();
-	auto t = instruction.t();
+	auto i = Instruction::imm(instruction);
+	auto t = Instruction::t(instruction);
 
 	// Low 16bits are set to 0
 	auto v = i << 16;
 	setReg(t, v);
 }
 
-void Cpu::opOri(Instruction &instruction)
+void Cpu::opOri(uint32_t instruction)
 {
-	auto i = instruction.imm();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	auto v = reg(s) | i;
 	setReg(t, v);
 }
 
-void Cpu::opSw(Instruction &instruction)
+void Cpu::opSw(uint32_t instruction)
 {
 	if ((mSr & 0x10000) != 0) {
 		// Cache is isolated, ignore write
@@ -451,9 +451,9 @@ void Cpu::opSw(Instruction &instruction)
 		return;
 	}
 
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = reg(s) + i;
 	auto v = reg(t);
@@ -465,50 +465,50 @@ void Cpu::opSw(Instruction &instruction)
 		exception(exception::StoreAddressError);
 }
 
-void Cpu::opSll(Instruction &instruction)
+void Cpu::opSll(uint32_t instruction)
 {
-	auto i = instruction.shift();
-	auto t = instruction.t();
-	auto d = instruction.d();
+	auto i = Instruction::shift(instruction);
+	auto t = Instruction::t(instruction);
+	auto d = Instruction::d(instruction);
 
 	auto v = reg(t) << i;
 
 	setReg(d, v);
 }
 
-void Cpu::opAddiu(Instruction &instruction)
+void Cpu::opAddiu(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	auto v = reg(s) + i;
 
 	setReg(t, v);
 }
 
-void Cpu::opJ(Instruction &instruction)
+void Cpu::opJ(uint32_t instruction)
 {
-	auto i = instruction.imm_jump();
+	auto i = Instruction::imm_jump(instruction);
 	mNextPc = (mNextPc & 0xf0000000) | (i << 2);
 
 	mBranch = true;
 }
 
-void Cpu::opOr(Instruction &instruction)
+void Cpu::opOr(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	auto v = reg(s) | reg(t);
 
 	setReg(d, v);
 }
 
-void Cpu::opCop0(Instruction &instruction)
+void Cpu::opCop0(uint32_t instruction)
 {
-	switch (instruction.copOpcode()) {
+	switch (Instruction::copOpcode(instruction)) {
 	case 0b00000:
 		opMfc0(instruction);
 		break;
@@ -519,14 +519,14 @@ void Cpu::opCop0(Instruction &instruction)
 		opRfe(instruction);
 		break;
 	default:
-		panic("unhandled cop0 instruction {:08x}", instruction.mData);
+		panic("unhandled cop0 instruction {:08x}", instruction);
 	}
 }
 
-void Cpu::opMtc0(Instruction &instruction)
+void Cpu::opMtc0(uint32_t instruction)
 {
-	auto cpu_r = instruction.t();
-	auto cop_r = instruction.d().val;
+	auto cpu_r = Instruction::t(instruction);
+	auto cop_r = Instruction::d(instruction).val;
 
 	auto v = reg(cpu_r);
 
@@ -565,11 +565,11 @@ void Cpu::branch(uint32_t offset)
 }
 
 
-void Cpu::opBne(Instruction &instruction)
+void Cpu::opBne(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto i = Instruction::imm_se(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	if (reg(s) != reg(t))
 	{
@@ -577,11 +577,11 @@ void Cpu::opBne(Instruction &instruction)
 	}
 }
 
-void Cpu::opAddi(Instruction &instruction)
+void Cpu::opAddi(uint32_t instruction)
 {
-	uint32_t i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	uint32_t i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 	uint32_t s1 = reg(s);
 	uint32_t v = s1 + i;
 
@@ -591,7 +591,7 @@ void Cpu::opAddi(Instruction &instruction)
 	setReg(t, v);
 }
 
-void Cpu::opLw(Instruction &instruction) {
+void Cpu::opLw(uint32_t instruction) {
 
 	if ((mSr & 0x10000) != 0)
 	{
@@ -600,9 +600,9 @@ void Cpu::opLw(Instruction &instruction) {
 		return;
 	}
 
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = reg(s) + i;
 
@@ -613,33 +613,33 @@ void Cpu::opLw(Instruction &instruction) {
 	mLoadReg = v;
 }
 
-void Cpu::opSltu(Instruction &instruction)
+void Cpu::opSltu(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	auto v = reg(s) < reg(t);
 
 	setReg(d, v);
 }
 
-void Cpu::opAddu(Instruction &instruction)
+void Cpu::opAddu(uint32_t instruction)
 {
-	auto s = instruction.s();
-	auto t = instruction.t();
-	auto d = instruction.d();
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
+	auto d = Instruction::d(instruction);
 
 	auto v = reg(s) + reg(t);
 
 	setReg(d, v);
 }
 
-void Cpu::opSh(Instruction &instruction)
+void Cpu::opSh(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = reg(s) + i;
 	uint16_t v = (uint16_t)reg(t);
@@ -651,7 +651,7 @@ void Cpu::opSh(Instruction &instruction)
 		exception(exception::StoreAddressError);
 }
 
-void Cpu::opJal(Instruction &instruction)
+void Cpu::opJal(uint32_t instruction)
 {
 	uint32_t ra = mNextPc;
 
@@ -665,22 +665,22 @@ void Cpu::opJal(Instruction &instruction)
 	mBranch = true;
 }
 
-void Cpu::opAndi(Instruction &instruction)
+void Cpu::opAndi(uint32_t instruction)
 {
-	auto i = instruction.imm();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	auto v = reg(s) & i;
 
 	setReg(t, v);
 }
 
-void Cpu::opSb(Instruction &instruction)
+void Cpu::opSb(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = reg(s) + i;
 	auto v = reg(t);
@@ -688,21 +688,21 @@ void Cpu::opSb(Instruction &instruction)
 	store8(addr, v);
 }
 
-void Cpu::opJr(Instruction &instruction)
+void Cpu::opJr(uint32_t instruction)
 {
-	auto s = instruction.s();
+	auto s = Instruction::s(instruction);
 
 	mNextPc = reg(s);
 
 	mBranch = true;
 }
 
-void Cpu::opLb(Instruction &instruction)
+void Cpu::opLb(uint32_t instruction)
 {
 
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = reg(s) + i;
 
@@ -714,11 +714,11 @@ void Cpu::opLb(Instruction &instruction)
 	mLoadReg = v;
 }
 
-void Cpu::opBeq(Instruction &instruction)
+void Cpu::opBeq(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto i = Instruction::imm_se(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	if (reg(s) == reg(t))
 	{
@@ -726,10 +726,10 @@ void Cpu::opBeq(Instruction &instruction)
 	}
 }
 
-void Cpu::opMfc0(Instruction &instruction)
+void Cpu::opMfc0(uint32_t instruction)
 {
-	auto cpuR = instruction.t();
-	auto copR = instruction.d().val;
+	auto cpuR = Instruction::t(instruction);
+	auto copR = Instruction::d(instruction).val;
 	uint32_t v;
 
 	switch (copR)
@@ -751,22 +751,22 @@ void Cpu::opMfc0(Instruction &instruction)
 	mLoadReg = v;
 }
 
-void Cpu::opAnd(Instruction &instruction)
+void Cpu::opAnd(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	auto v = reg(s) & reg(t);
 
 	setReg(d, v);
 }
 
-void Cpu::opAdd(Instruction &instruction)
+void Cpu::opAdd(uint32_t instruction)
 {
-	auto s = instruction.s();
-	auto t = instruction.t();
-	auto d = instruction.d();
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
+	auto d = Instruction::d(instruction);
 
 	uint32_t i_s = reg(s);
 	uint32_t i_t = reg(t);
@@ -779,10 +779,10 @@ void Cpu::opAdd(Instruction &instruction)
 	setReg(d, v);
 }
 
-void Cpu::opBgtz(Instruction &instruction)
+void Cpu::opBgtz(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto s = Instruction::s(instruction);
 
 	int32_t v = reg(s);
 
@@ -790,10 +790,10 @@ void Cpu::opBgtz(Instruction &instruction)
 		branch(i);
 }
 
-void Cpu::opBlez(Instruction &instruction)
+void Cpu::opBlez(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto s = Instruction::s(instruction);
 
 	int32_t v = reg(s);
 
@@ -801,11 +801,11 @@ void Cpu::opBlez(Instruction &instruction)
 		branch(i);
 }
 
-void Cpu::opLbu(Instruction &instruction) {
+void Cpu::opLbu(uint32_t instruction) {
 
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = reg(s) + i;
 
@@ -816,10 +816,10 @@ void Cpu::opLbu(Instruction &instruction) {
 	mLoadReg = v;
 }
 
-void Cpu::opJalr(Instruction &instruction)
+void Cpu::opJalr(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t ra = mNextPc;
 
@@ -831,15 +831,13 @@ void Cpu::opJalr(Instruction &instruction)
 	mBranch = true;
 }
 
-void Cpu::opBxx(Instruction &instruction)
+void Cpu::opBxx(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto s = Instruction::s(instruction);
 
-	uint32_t instruction_val = instruction.mData;
-
-	bool is_bgez = (instruction_val >> 16) & 1;
-	bool is_link = ((instruction_val >> 17) & 0xf) == 8;
+	bool is_bgez = (instruction >> 16) & 1;
+	bool is_link = ((instruction >> 17) & 0xf) == 8;
 
 	int32_t v = reg(s);
 
@@ -863,43 +861,43 @@ void Cpu::opBxx(Instruction &instruction)
 		branch(i);
 }
 
-void Cpu::opSlti(Instruction &instruction)
+void Cpu::opSlti(uint32_t instruction)
 {
-	int32_t i = instruction.imm_se();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	int32_t i = Instruction::imm_se(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	auto v = ((int32_t)reg(s)) < i;
 
 	setReg(t, v);
 }
 
-void Cpu::opSubu(Instruction &instruction)
+void Cpu::opSubu(uint32_t instruction)
 {
-	auto s = instruction.s();
-	auto t = instruction.t();
-	auto d = instruction.d();
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
+	auto d = Instruction::d(instruction);
 
 	auto v = reg(s) - reg(t);
 
 	setReg(d, v);
 }
 
-void Cpu::opSra(Instruction &instruction)
+void Cpu::opSra(uint32_t instruction)
 {
-	auto i = instruction.shift();
-	auto t = instruction.t();
-	auto d = instruction.d();
+	auto i = Instruction::shift(instruction);
+	auto t = Instruction::t(instruction);
+	auto d = Instruction::d(instruction);
 
 	uint32_t v = ((int32_t)reg(t)) >> i;
 
 	setReg(d, v);
 }
 
-void Cpu::opDiv(Instruction &instruction)
+void Cpu::opDiv(uint32_t instruction)
 {
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	int32_t n = reg(s);
 	int32_t d = reg(t);
@@ -924,29 +922,29 @@ void Cpu::opDiv(Instruction &instruction)
 	}
 }
 
-void Cpu::opMflo(Instruction &instruction)
+void Cpu::opMflo(uint32_t instruction)
 {
-	auto d = instruction.d();
+	auto d = Instruction::d(instruction);
 
 	setReg(d, mLo);
 }
 
-void Cpu::opSrl(Instruction &instruction)
+void Cpu::opSrl(uint32_t instruction)
 {
-	auto i = instruction.shift();
-	auto t = instruction.t();
-	auto d = instruction.d();
+	auto i = Instruction::shift(instruction);
+	auto t = Instruction::t(instruction);
+	auto d = Instruction::d(instruction);
 
 	auto v = reg(t) >> i;
 
 	setReg(d, v);
 }
 
-void Cpu::opSltiu(Instruction &instruction)
+void Cpu::opSltiu(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto i = Instruction::imm_se(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	auto v = reg(s) < i;
 
@@ -954,10 +952,10 @@ void Cpu::opSltiu(Instruction &instruction)
 }
 
 // Divide Unsigned
-void Cpu::opDivu(Instruction &instruction)
+void Cpu::opDivu(uint32_t instruction)
 {
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	auto n = reg(s);
 	auto d = reg(t);
@@ -973,18 +971,18 @@ void Cpu::opDivu(Instruction &instruction)
 	}
 }
 
-void Cpu::opMfhi(Instruction &instruction)
+void Cpu::opMfhi(uint32_t instruction)
 {
-	auto d = instruction.d();
+	auto d = Instruction::d(instruction);
 
 	setReg(d, mHi);
 }
 
-void Cpu::opSlt(Instruction &instruction)
+void Cpu::opSlt(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	int32_t s_i = reg(s);
 	int32_t t_i = reg(t);
@@ -994,26 +992,26 @@ void Cpu::opSlt(Instruction &instruction)
 	setReg(d, v);
 }
 
-void Cpu::opMtlo(Instruction &instruction)
+void Cpu::opMtlo(uint32_t instruction)
 {
-	auto s = instruction.s();
+	auto s = Instruction::s(instruction);
 
 	mLo = reg(s);
 }
 
-void Cpu::opMthi(Instruction &instruction)
+void Cpu::opMthi(uint32_t instruction)
 {
-	auto s = instruction.s();
+	auto s = Instruction::s(instruction);
 
 	mHi = reg(s);
 }
 
-void Cpu::opLhu(Instruction &instruction)
+void Cpu::opLhu(uint32_t instruction)
 {
 
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = reg(s) + i;
 
@@ -1030,14 +1028,14 @@ void Cpu::opLhu(Instruction &instruction)
 	}
 }
 
-void Cpu::opRfe(Instruction &instruction)
+void Cpu::opRfe(uint32_t instruction)
 {
 	// There are other instructions with the same encoding but all
 	// are virtual memory related and the Playstation doesn't
 	// implement them. Still, let's make sure we're not running
 	// buggy code.
-	if ((instruction.mData & 0x3f) != 0b010000)
-		panic("Invalid cop0 instruction: {}", instruction.mData);
+	if ((instruction & 0x3f) != 0b010000)
+		panic("Invalid cop0 instruction: {}", instruction);
 
 	// Restore the pre-exception mode by shifting the Interrupt
 	// Enable/User Mode stack back to its original position.
@@ -1046,11 +1044,11 @@ void Cpu::opRfe(Instruction &instruction)
 	mSr |= mode >> 2;
 }
 
-void Cpu::opSllv(Instruction &instruction)
+void Cpu::opSllv(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	// Shift amount is truncated to 5 bits
 	auto v = reg(t) << (reg(s) & 0x1f);
@@ -1058,11 +1056,11 @@ void Cpu::opSllv(Instruction &instruction)
 	setReg(d, v);
 }
 
-void Cpu::opLh(Instruction &instruction)
+void Cpu::opLh(uint32_t instruction)
 {
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = reg(s) + i;
 
@@ -1074,22 +1072,22 @@ void Cpu::opLh(Instruction &instruction)
 	mLoadReg = v;
 }
 
-void Cpu::opNor(Instruction &instruction)
+void Cpu::opNor(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	auto v = ~(reg(s) | reg(t));
 
 	setReg(d, v);
 }
 
-void Cpu::opSrav(Instruction &instruction)
+void Cpu::opSrav(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	// Shift amount is truncated to 5 bits
 	auto v = ((int32_t)reg(t)) >> (reg(s) & 0x1f);
@@ -1097,11 +1095,11 @@ void Cpu::opSrav(Instruction &instruction)
 	setReg(d, v);
 }
 
-void Cpu::opSrlv(Instruction &instruction)
+void Cpu::opSrlv(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	// Shift amount is truncated to 5 bits
 	auto v = reg(t) >> (reg(s) & 0x1f);
@@ -1109,10 +1107,10 @@ void Cpu::opSrlv(Instruction &instruction)
 	setReg(d, v);
 }
 
-void Cpu::opMultu(Instruction &instruction)
+void Cpu::opMultu(uint32_t instruction)
 {
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	uint64_t a = reg(s);
 	uint64_t b = reg(t);
@@ -1123,26 +1121,26 @@ void Cpu::opMultu(Instruction &instruction)
 	mLo = v;
 }
 
-void Cpu::opXor(Instruction &instruction)
+void Cpu::opXor(uint32_t instruction)
 {
-	auto d = instruction.d();
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto d = Instruction::d(instruction);
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	auto v = reg(s) ^ reg(t);
 
 	setReg(d, v);
 }
 
-void Cpu::opBreak(Instruction &instruction)
+void Cpu::opBreak(uint32_t instruction)
 {
 	exception(exception::Break);
 }
 
-void Cpu::opMult(Instruction &instruction)
+void Cpu::opMult(uint32_t instruction)
 {
-	auto s = instruction.s();
-	auto t = instruction.t();
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
 
 	int64_t a = ((int32_t)reg(s));
 	int64_t b = ((int32_t)reg(t));
@@ -1153,11 +1151,11 @@ void Cpu::opMult(Instruction &instruction)
 	mLo = (uint32_t)v;
 }
 
-void Cpu::opSub(Instruction &instruction)
+void Cpu::opSub(uint32_t instruction)
 {
-	auto s = instruction.s();
-	auto t = instruction.t();
-	auto d = instruction.d();
+	auto s = Instruction::s(instruction);
+	auto t = Instruction::t(instruction);
+	auto d = Instruction::d(instruction);
 
 	uint32_t s_i = reg(s);
 	uint32_t t_i = reg(t);
@@ -1170,38 +1168,38 @@ void Cpu::opSub(Instruction &instruction)
 		setReg(d, v);
 }
 
-void Cpu::opXori(Instruction &instruction)
+void Cpu::opXori(uint32_t instruction)
 {
-	auto i = instruction.imm();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	auto v = reg(s) ^ i;
 
 	setReg(t, v);
 }
 
-void Cpu::opCop1(Instruction &instruction)
+void Cpu::opCop1(uint32_t instruction)
 {
 	exception(exception::CoprocessorError);
 }
 
-void Cpu::opCop2(Instruction &instruction)
+void Cpu::opCop2(uint32_t instruction)
 {
-	panic("unhandled GTE instruction: {}", instruction.mData);
+	panic("unhandled GTE instruction: {}", instruction);
 }
 
-void Cpu::opCop3(Instruction &instruction)
+void Cpu::opCop3(uint32_t instruction)
 {
 	exception(exception::CoprocessorError);
 }
 
-void Cpu::opLwl(Instruction &instruction)
+void Cpu::opLwl(uint32_t instruction)
 {
 
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = (uint32_t)(reg(s) + i);
 
@@ -1242,12 +1240,12 @@ void Cpu::opLwl(Instruction &instruction)
 	mLoadReg = v;
 }
 
-void Cpu::opLwr(Instruction &instruction)
+void Cpu::opLwr(uint32_t instruction)
 {
 
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = (uint32_t)(reg(s) + i);
 
@@ -1288,12 +1286,12 @@ void Cpu::opLwr(Instruction &instruction)
 	mLoadReg = v;
 }
 
-void Cpu::opSwl(Instruction &instruction)
+void Cpu::opSwl(uint32_t instruction)
 {
 
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = (uint32_t)(reg(s) + i);
 	auto v = reg(t);
@@ -1325,12 +1323,12 @@ void Cpu::opSwl(Instruction &instruction)
 	store32(aligned_addr, mem);
 }
 
-void Cpu::opSwr(Instruction &instruction)
+void Cpu::opSwr(uint32_t instruction)
 {
 
-	auto i = instruction.imm_se();
-	auto t = instruction.t();
-	auto s = instruction.s();
+	auto i = Instruction::imm_se(instruction);
+	auto t = Instruction::t(instruction);
+	auto s = Instruction::s(instruction);
 
 	uint32_t addr = (uint32_t)(reg(s) + i);
 	auto v = reg(t);
@@ -1362,128 +1360,56 @@ void Cpu::opSwr(Instruction &instruction)
 	store32(aligned_addr, mem);
 }
 
-void Cpu::opLwc0(Instruction &instruction)
+void Cpu::opLwc0(uint32_t instruction)
 {
 	// Not supported by this coprocessor
 	exception(exception::CoprocessorError);
 }
 
-void Cpu::opLwc1(Instruction &instruction)
+void Cpu::opLwc1(uint32_t instruction)
 {
 	// Not supported by this coprocessor
 	exception(exception::CoprocessorError);
 }
 
-void Cpu::opLwc2(Instruction &instruction)
+void Cpu::opLwc2(uint32_t instruction)
 {
-	panic("unhandled GTE LWC: {}", instruction.mData);
+	panic("unhandled GTE LWC: {}", instruction);
 }
 
-void Cpu::opLwc3(Instruction &instruction)
+void Cpu::opLwc3(uint32_t instruction)
 {
 	// Not supported by this coprocessor
 	exception(exception::CoprocessorError);
 }
 
-void Cpu::opSwc0(Instruction &instruction)
+void Cpu::opSwc0(uint32_t instruction)
 {
 	// Not supported by this coprocessor
 	exception(exception::CoprocessorError);
 }
 
-void Cpu::opSwc1(Instruction &instruction)
+void Cpu::opSwc1(uint32_t instruction)
 {
 	// Not supported by this coprocessor
 	exception(exception::CoprocessorError);
 }
 
-void Cpu::opSwc2(Instruction &instruction)
+void Cpu::opSwc2(uint32_t instruction)
 {
-	panic("unhandled GTE SWC: {}", instruction.mData);
+	panic("unhandled GTE SWC: {}", instruction);
 }
 
-void Cpu::opSwc3(Instruction &instruction)
+void Cpu::opSwc3(uint32_t instruction)
 {
 	// Not supported by this coprocessor
 	exception(exception::CoprocessorError);
 }
 
-void Cpu::opIllegal(Instruction &instruction)
+void Cpu::opIllegal(uint32_t instruction)
 {
-	println("Illegal instruction {}!", instruction.mData);
+	println("Illegal instruction {}!", instruction);
 	exception(exception::IllegalInstruction);
-}
-
-Instruction::Instruction(uint32_t data) : mData(data)
-{
-}
-
-Instruction::~Instruction()
-{
-}
-
-// Return bits [31:26] of the instruction
-uint32_t Instruction::function()
-{
-	return mData >> 26;
-}
-
-// Return bits [5:0] of the instruction
-uint32_t Instruction::subfunction()
-{
-	return mData & 0x3f;
-}
-
-// Return coprocessor opcode in bits [25:21]
-uint32_t Instruction::copOpcode()
-{
-	return (mData >> 21) & 0x1f;
-}
-
-// Return register index in bits [20:16]
-RegisterIndex Instruction::t()
-{
-	RegisterIndex ret = {(mData >> 16) & 0x1f};
-	return ret;
-}
-
-// Return register index in bits [25:21]
-RegisterIndex Instruction::s()
-{
-	RegisterIndex ret = {(mData >> 21) & 0x1f};
-	return ret;
-}
-
-// Return register index in bits [15:11]
-RegisterIndex Instruction::d()
-{
-	RegisterIndex ret = {(mData >> 11) & 0x1f};
-	return ret;
-}
-
-// Return immediate value in bits [16:0]
-uint32_t Instruction::imm()
-{
-	return mData & 0xffff;
-}
-
-// Return immediate value in bits [16:0] as a sign-extended 32bit value
-uint32_t Instruction::imm_se()
-{
-	int16_t tmp = mData & 0xffff;
-	return (uint32_t)tmp;
-}
-
-// Jump target stored in bits [25:0]
-uint32_t Instruction::imm_jump()
-{
-	return mData & 0x3ffffff;
-}
-
-// Shift Immediate values are stored in bits [10:6]
-uint32_t Instruction::shift()
-{
-	return (mData >> 6) & 0x1f;
 }
 
 } // namespace cpu
