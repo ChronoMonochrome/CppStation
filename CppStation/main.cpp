@@ -22,12 +22,12 @@ int main()
 	bool shouldClose = false;
 
 	do {
-		bus.mCpu.runNextInstruction();
-		if (bus.mCpu.mIp % 100000 == 0) 
+		for (int i = 0; i < 1000000; i++) 
 		{
-			glfwPollEvents();
-			shouldClose = bus.mGpu.mRenderer.mWindow.shouldClose();
+			bus.mCpu.runNextInstruction();
 		}
+		glfwPollEvents();
+		shouldClose = bus.mGpu.mRenderer.mWindow.shouldClose();
 	} while(!shouldClose);
 
 	return 0;
