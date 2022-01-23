@@ -7,7 +7,7 @@ namespace gpu {
 namespace opengl {
 namespace window {
 
-Window::Window()
+Window::Window() : mShouldClose(false)
 {
 }
 
@@ -45,7 +45,7 @@ void Window::init(int width, int height, const char* title, bool fullScreenMode)
 
 bool Window::shouldClose() const
 {
-	if (!mNativeWindow)
+	if (!mNativeWindow || mShouldClose)
 		return true;
 
 	return glfwWindowShouldClose(mNativeWindow);

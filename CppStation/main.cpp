@@ -19,11 +19,16 @@ int main()
 	setupSigAct();
 
 	bus::Bus bus;
-
+	bool shouldClose = false;
 
 	do {
 		bus.mCpu.runNextInstruction();
-	} while(!bus.mGpu.mRenderer.mWindow.shouldClose());
+		if (bus.mCpu.mIp % 100000 == 0) 
+		{
+			glfwPollEvents();
+			shouldClose = bus.mGpu.mRenderer.mWindow.shouldClose();
+		}
+	} while(!shouldClose);
 
 	return 0;
 }

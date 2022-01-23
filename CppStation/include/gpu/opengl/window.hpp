@@ -17,6 +17,8 @@ public:
 	int mWidth;
 	int mHeight;
 
+	bool mShouldClose;
+
 	void init(int width, int height, const char* title, bool fullScreenMode);
 	[[nodiscard]] bool shouldClose() const;
 
