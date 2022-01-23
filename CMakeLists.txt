@@ -2,6 +2,17 @@ cmake_minimum_required(VERSION 3.16)
 
 project(CppStation)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+if(UNIX)
+  set(CMAKE_CXX_FLAGS_DEBUG "-g")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+else()
+  set(CMAKE_CXX_FLAGS_RELEASE "/O2")
+endif()
+
 include(FetchContent)
 
 add_definitions(-DGLFW_INCLUDE_NONE)
