@@ -114,6 +114,18 @@ void Renderer::pushTriangle(Vertex v1, Vertex v2, Vertex v3)
 	pushVertex(v3);
 }
 
+void Renderer::pushQuad(Vertex v1, Vertex v2, Vertex v3, Vertex v4)
+{
+	if (mVerticesNum + 4 > VERTEX_BUFFER_LEN)
+	{
+		println("Vertex attribute buffers full, forcing draw");
+		draw();
+	}
+
+	pushTriangle(v1, v2, v3);
+	pushTriangle(v2, v3, v4);
+}
+
 void Renderer::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT);

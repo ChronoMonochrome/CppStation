@@ -59,6 +59,7 @@ public:
 	void init();
 	void pushVertex(Vertex v);
 	void pushTriangle(Vertex v1, Vertex v2, Vertex v3);
+	void pushQuad(Vertex v1, Vertex v2, Vertex v3, Vertex v4);
 	void draw();
 	void display();
 };

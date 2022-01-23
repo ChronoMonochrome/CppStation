@@ -313,12 +313,27 @@ void Gpu::gp0ClearCache()
 
 void Gpu::gp0QuadMonoOpaque()
 {
-	println("Draw quad");
+	// Only one color repeated 4 times
+	Color color = Color::fromPacked(mGp0Command[0]);
+	Vertex v1 = {Position::fromPacked(mGp0Command[1]), color};
+	Vertex v2 = {Position::fromPacked(mGp0Command[2]), color};
+	Vertex v3 = {Position::fromPacked(mGp0Command[3]), color};
+	Vertex v4 = {Position::fromPacked(mGp0Command[4]), color};
+
+	mRenderer.pushQuad(v1, v2, v3, v4);
 }
 
 void Gpu::gp0QuadTextureBlendOpaque()
 {
-	println("Draw quad texture blending");
+	// XXX We don't support textures for now, use a solid red
+	// color instead
+	Color color = {1.0f, 0.0f, 0.0f};
+	Vertex v1 = {Position::fromPacked(mGp0Command[1]), color};
+	Vertex v2 = {Position::fromPacked(mGp0Command[3]), color};
+	Vertex v3 = {Position::fromPacked(mGp0Command[5]), color};
+	Vertex v4 = {Position::fromPacked(mGp0Command[7]), color};
+
+	mRenderer.pushQuad(v1, v2, v3, v4);
 }
 
 void Gpu::gp0TriangleShadedOpaque()
@@ -327,13 +342,17 @@ void Gpu::gp0TriangleShadedOpaque()
 	Vertex v2 = {Position::fromPacked(mGp0Command[3]), Color::fromPacked(mGp0Command[2])};
 	Vertex v3 = {Position::fromPacked(mGp0Command[5]), Color::fromPacked(mGp0Command[4])};
 
-	println("draw triangle [{} {} - {} {} {}] [{} {} - {} {} {}] [{} {} - {} {} {}]", v1.pos.x, v1.pos.y, v1.color.r, v1.color.g, v1.color.b, v2.pos.x, v2.pos.y, v2.color.r, v2.color.g, v2.color.b, v3.pos.x, v3.pos.y, v3.color.r, v3.color.g, v3.color.b);
 	mRenderer.pushTriangle(v1, v2, v3);
 }
 
 void Gpu::gp0QuadShadedOpaque()
 {
-	println("Draw quad shaded");
+	Vertex v1 = {Position::fromPacked(mGp0Command[1]), Color::fromPacked(mGp0Command[0])};
+	Vertex v2 = {Position::fromPacked(mGp0Command[3]), Color::fromPacked(mGp0Command[2])};
+	Vertex v3 = {Position::fromPacked(mGp0Command[5]), Color::fromPacked(mGp0Command[4])};
+	Vertex v4 = {Position::fromPacked(mGp0Command[7]), Color::fromPacked(mGp0Command[6])};
+
+	mRenderer.pushQuad(v1, v2, v3, v4);
 }
 
 void Gpu::gp0ImageLoad()
